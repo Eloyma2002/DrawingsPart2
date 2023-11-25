@@ -12,8 +12,7 @@ public class Drawing {
     private int numFigures;
     private LocalDate date;
 
-    public Drawing(String name, User user, String figures, int id) {
-        this.id = ++id;
+    public Drawing(String name, User user, String figures) {
         this.name = name;
         this.user = user;
         this.figures = figures;
@@ -42,7 +41,7 @@ public class Drawing {
     }
 
     public void setId(int id) {
-        this.id = id;
+        this.id = ++this.id;
     }
 
     public String getName() {
