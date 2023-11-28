@@ -37,10 +37,11 @@
     </div>
 </nav>
 
-
+<th:if="${error}">
     <h1 class="confirmation">
-        Your drawing is saved
+        [[${confirmation}]]
     </h1>
+</th:if>
 
 </body>
 

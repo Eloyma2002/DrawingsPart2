@@ -26,24 +26,26 @@ public class LoginController {
 
     // Gestionar les sol·licituds POST en enviar el formulari de registre
     @PostMapping("/login")
-    public String postRegister(Model model, @RequestParam String username, @RequestParam String password ,
-                               HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    public String postLogin(Model model, @RequestParam String username, @RequestParam String password, HttpServletRequest req) throws IOException {
 
         // Intentar realitzar l'inici de sessió i obtenir l'objecte User corresponent
         User user = userServices.login(username, password);
 
+
         // Si l'usuari existeix, crear una sessió i redirigir a la pàgina de geoform
         if (user != null) {
-            resp.sendRedirect("/geoform");
+            HttpSession session = req.getSession();
+            session.setAttribute("user", user);
+            return "redirect:/geoform";
         } else {
             // Manejar la excepció d'usuari no trobat configurant un missatge d'error i redirigint a la pàgina d'inici de sessió
-            req.setAttribute("error", "User not found");
+            model.addAttribute("error", "User not found");
         }
         return "login";
     }
 
     @GetMapping("/login")
-    public String getRegister() {
+    public String getLogin() {
         return "login";
     }
 }

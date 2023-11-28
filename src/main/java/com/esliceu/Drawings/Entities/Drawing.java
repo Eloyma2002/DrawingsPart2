@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 public class Drawing {
 
-    private int id = 0;
+    private int id;
     private String name;
     private User user;
     private String figures;
@@ -41,7 +41,7 @@ public class Drawing {
     }
 
     public void setId(int id) {
-        this.id = ++this.id;
+        this.id = id;
     }
 
     public String getName() {

@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,35 +24,29 @@ import java.io.IOException;
 public class GeoformController {
 
     @Autowired
-    // Inicialitzar UserServices per interactuar amb funcionalitats relacionades amb l'usuari
-    UserServices userServices;
-    HttpSession httpSession;
     DrawingServices drawingServices;
 
 
     // Gestionar les sol·licituds POST en enviar el formulari de registre
     @PostMapping("/geoform")
-    public String postRegister(Model model, @RequestParam String json, @RequestParam String name ,
-                               HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    public String postGeoform(Model model, @RequestParam String json, @RequestParam String name, HttpServletRequest req){
 
         // Obtenir l'usuari de la sessió actual
-        User user = (User) httpSession.getAttribute("user");
+        HttpSession session = req.getSession();
+        User user = (User) session.getAttribute("user");
 
         // Guardar el dibuix a la base de dades
         if (drawingServices.save(name, user, json)) {
-            RequestDispatcher dispatcher = req.getRequestDispatcher("/templates/confirmationSave.html");
             model.addAttribute("confirmation", "Your drawing is saved");
-            dispatcher.forward(req, resp);
+            return "confirmation";
         } else {
-            RequestDispatcher dispatcher = req.getRequestDispatcher("/templates/error.html");
             model.addAttribute("error", "You cannot save a drawing without content");
-            dispatcher.forward(req, resp);
+            return "error";
         }
-        return "geoform";
     }
 
     @GetMapping("/geoform")
-    public String getRegister() {
+    public String getGeoform() {
         return "geoform";
     }
 }

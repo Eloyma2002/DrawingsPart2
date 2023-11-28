@@ -48,7 +48,7 @@ public class RegisterController {
         try {
             // Intentar registrar l'usuari; si té èxit, redirigir a la pàgina d'inici de sessió
             userServices.register(username, password, nameAndLastname);
-            resp.sendRedirect("/login");
+            return "redirect:/login";
         } catch (UserExist userExist) {
             // Gestionar l'excepció per a un usuari existent configurant un atribut d'error i redirigint a la pàgina de registre
             model.addAttribute("error", "User already exist");

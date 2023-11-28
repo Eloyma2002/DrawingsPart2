@@ -38,7 +38,7 @@ public class DrawingDAOImpl implements DrawingDAO {
         // Filtrar i tornar la llista de dibuixos pertanyents a un usuari específic
         List<Drawing> myList = new ArrayList<>();
         for (Drawing drawing : drawings) {
-            if (drawing.getUser().equals(user)) {
+            if (drawing.getUser().getUsername().equals(user.getUsername())) {
                 myList.add(drawing);
             }
         }

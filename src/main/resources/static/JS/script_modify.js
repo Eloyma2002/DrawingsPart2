@@ -10,12 +10,12 @@ const rangeInput = document.querySelector("#size");
 const nameImage = document.querySelector('#name');
 const buttonClean = document.querySelector('#clean');
 const buttonSend = document.querySelector('#send');
-const inputJSON = document.querySelector('#JSON');
+const inputJSON = document.querySelector('#json');
 const list = document.querySelector('#list');
 const buttonDraw = document.querySelector('#draw');
 
 // Obtiene la cadena JSON del elemento con id 'JSON' y la parsea
-const jsonString = document.querySelector('#JSON').value;
+const jsonString = document.querySelector('#json').value;
 const jsonObject = JSON.parse(jsonString);
 
 // Variables 

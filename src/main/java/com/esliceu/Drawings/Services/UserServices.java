@@ -8,7 +8,6 @@ import com.esliceu.Drawings.Repositories.UserDAO;
 import com.google.common.hash.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 import java.nio.charset.StandardCharsets;
 
@@ -31,7 +30,6 @@ public class UserServices {
         if (password.length() < 5) {
             return null;
         }
-        User user = userDAO.getUser(userName, Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString());
-        return user;
+        return userDAO.getUser(userName, Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString());
     }
 }

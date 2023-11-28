@@ -3,7 +3,7 @@ const canvas = document.querySelector('#canvas');
 const context = canvas.getContext('2d');
 
 // Obtiene la cadena JSON del elemento con id 'JSON' y la parsea
-const jsonString = document.querySelector('#JSON').value;
+const jsonString = document.querySelector('#json').value;
 const jsonObject = JSON.parse(jsonString);
 
 // Itera sobre el array de figuras y las dibuja

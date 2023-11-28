@@ -5,6 +5,7 @@ import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Repositories.DrawingDAO;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +24,8 @@ public class DrawingServices {
 
         try {
             // Intentar parsejar el JSON i obtenir el nombre de figures
-            JSONParser parser = new JSONParser();
-            JSONArray jsonArray = (JSONArray) parser.parse(json);
-            drawing.setNumFigures(jsonArray.size());
+            int numFigures = getNumFigures(json);
+            drawing.setNumFigures(numFigures);
             if (drawing.getNumFigures() == 0) {
                 return false;
             }
@@ -36,6 +36,12 @@ public class DrawingServices {
         // Desar el dibuix a la base de dades
         drawingDAO.save(drawing);
         return true;
+    }
+
+    public int getNumFigures(String json) throws ParseException {
+        JSONParser parser = new JSONParser();
+        JSONArray jsonArray = (JSONArray) parser.parse(json);
+        return jsonArray.size();
     }
 
     // Mètode per carregar tots els dibuixos
