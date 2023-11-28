@@ -2,7 +2,7 @@ package com.esliceu.Drawings.Services;
 
 import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
-import com.esliceu.Drawings.Repositories.DrawingDAO;
+import com.esliceu.Drawings.Repositories.DrawingREPO;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -16,7 +16,7 @@ import java.util.Objects;
 public class DrawingServices {
 
     @Autowired
-    DrawingDAO drawingDAO;
+    DrawingREPO drawingREPO;
 
     // Mètode per desar un dibuix
     public boolean save(String name, User user, String json) {
@@ -34,7 +34,7 @@ public class DrawingServices {
         }
 
         // Desar el dibuix a la base de dades
-        drawingDAO.save(drawing);
+        drawingREPO.save(drawing);
         return true;
     }
 
@@ -46,22 +46,22 @@ public class DrawingServices {
 
     // Mètode per carregar tots els dibuixos
     public List<Drawing> loadAll() {
-        return drawingDAO.loadAllLists();
+        return drawingREPO.loadAllLists();
     }
 
     // Mètode per carregar la llista de dibuixos d'un usuari específic
     public List<Drawing> loadMyList(User user) {
-        return drawingDAO.loadMyList(user);
+        return drawingREPO.loadMyList(user);
     }
 
     // Mètode per eliminar un dibuix
     public boolean delete(int id, User user) {
-        return drawingDAO.deleteDrawing(id, user);
+        return drawingREPO.deleteDrawing(id, user);
     }
 
     // Mètode per obtenir un dibuix pel seu ID
     public Drawing getDrawing(int id) {
-        return drawingDAO.getDrawing(id);
+        return drawingREPO.getDrawing(id);
     }
 
     // Mètode per modificar un dibuix ja creat anteriorment
@@ -72,7 +72,7 @@ public class DrawingServices {
             // Intentar parsejar el JSON i obtenir el nombre de figures
             JSONArray jsonArray = (JSONArray) parser.parse(figures);
             if (Objects.equals(user.getUsername(), drawing.getUser().getUsername())) {
-                drawingDAO.modifyFigures(id, figures, newName, jsonArray.size(), user);
+                drawingREPO.modifyFigures(id, figures, newName, jsonArray.size(), user);
                 return true;
             }
         } catch (Exception e) {

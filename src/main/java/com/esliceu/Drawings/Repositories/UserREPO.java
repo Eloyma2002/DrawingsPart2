@@ -6,7 +6,7 @@ import com.esliceu.Drawings.Exceptions.UserExist;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserDAO {
+public interface UserREPO {
 
     void saveUser(User user) throws UserExist;
 

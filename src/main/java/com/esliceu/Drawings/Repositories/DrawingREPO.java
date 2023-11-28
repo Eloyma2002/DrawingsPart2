@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DrawingDAO {
+public interface DrawingREPO {
 
     boolean save(Drawing dr);
 

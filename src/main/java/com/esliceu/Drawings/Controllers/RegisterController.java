@@ -1,13 +1,11 @@
 package com.esliceu.Drawings.Controllers;
 
 
-import com.esliceu.Drawings.Exceptions.PasswordNotValid;
 import com.esliceu.Drawings.Exceptions.UserExist;
 import com.esliceu.Drawings.Services.UserServices;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

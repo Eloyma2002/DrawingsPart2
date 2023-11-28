@@ -4,7 +4,7 @@ import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Exceptions.UserDoesntExist;
 import com.esliceu.Drawings.Exceptions.UserExist;
 
-import com.esliceu.Drawings.Repositories.UserDAO;
+import com.esliceu.Drawings.Repositories.UserREPO;
 import com.google.common.hash.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,14 +15,14 @@ import java.nio.charset.StandardCharsets;
 public class UserServices {
 
     @Autowired
-    UserDAO userDAO;
+    UserREPO userREPO;
 
     public void register(String username, String password, String nameAndLastname) throws UserExist {
         // Hash de la contrasenya abans d'emmagatzemar-la a la llista d'usuaris
         User user = new User(username, nameAndLastname, Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString());
 
         // Obtenir el DAO d'usuari i inserir el nou usuari
-        userDAO.saveUser(user);
+        userREPO.saveUser(user);
     }
 
     public User login(String userName, String password) throws UserDoesntExist {
@@ -30,6 +30,6 @@ public class UserServices {
         if (password.length() < 5) {
             return null;
         }
-        return userDAO.getUser(userName, Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString());
+        return userREPO.getUser(userName, Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString());
     }
 }

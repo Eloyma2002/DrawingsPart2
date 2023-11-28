@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class DrawingDAOImpl implements DrawingDAO {
+public class DrawingREPOImpl implements DrawingREPO {
 
     // Llista que emmagatzema els dibuixos com a base de dades (cada un enllaçat amb el seu usuari corresponent)
     static List<Drawing> drawings = new ArrayList<>();
