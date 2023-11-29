@@ -34,7 +34,7 @@ public class DrawingServices {
         }
 
         // Desar el dibuix a la base de dades
-        drawingREPO.save(drawing);
+        drawingREPO.save(drawing, user);
         return true;
     }
 
@@ -61,6 +61,7 @@ public class DrawingServices {
 
     // Mètode per obtenir un dibuix pel seu ID
     public Drawing getDrawing(int id) {
+
         return drawingREPO.getDrawing(id);
     }
 

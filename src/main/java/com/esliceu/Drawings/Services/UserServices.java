@@ -19,7 +19,7 @@ public class UserServices {
 
     public void register(String username, String password, String nameAndLastname) throws UserExist {
         // Hash de la contrasenya abans d'emmagatzemar-la a la llista d'usuaris
-        User user = new User(username, nameAndLastname, Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString());
+        User user = new User(username, nameAndLastname, Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString(), 0);
 
         // Obtenir el DAO d'usuari i inserir el nou usuari
         userREPO.saveUser(user);
@@ -30,6 +30,7 @@ public class UserServices {
         if (password.length() < 5) {
             return null;
         }
-        return userREPO.getUser(userName, Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString());
+        String hash = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
+        return userREPO.getUser(userName, hash);
     }
 }

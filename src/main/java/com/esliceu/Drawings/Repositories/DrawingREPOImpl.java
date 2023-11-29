@@ -2,8 +2,13 @@ package com.esliceu.Drawings.Repositories;
 
 import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.batch.BatchProperties;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,13 +22,14 @@ public class DrawingREPOImpl implements DrawingREPO {
     // Variable per assignar IDs úniques als dibuixos
     static int id = 0;
 
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
     @Override
-    public boolean save(Drawing drawing) {
+    public boolean save(Drawing drawing, User user) {
         // Assignar una ID única al dibuix i afegir-lo a la llista
-        drawing.setId(id);
-        drawings.add(drawing);
-        // Incrementar la ID per al pròxim dibuix
-        id++;
+        jdbcTemplate.update("INSERT INTO `drawing` (`name`, `figures`, `numFigures`, `date`, `idUser`) VALUES (?, ?, ?, ?, ?);",
+                drawing.getName(), drawing.getFigures(), drawing.getNumFigures(), drawing.getDate(), user.getId());
         return true;
     }
 
@@ -35,14 +41,13 @@ public class DrawingREPOImpl implements DrawingREPO {
 
     @Override
     public List<Drawing> loadMyList(User user) {
-        // Filtrar i tornar la llista de dibuixos pertanyents a un usuari específic
+       /* // Filtrar i tornar la llista de dibuixos pertanyents a un usuari específic
         List<Drawing> myList = new ArrayList<>();
         for (Drawing drawing : drawings) {
             if (drawing.getUser().getUsername().equals(user.getUsername())) {
                 myList.add(drawing);
             }
-        }
-        return myList;
+        }*/        return null;
     }
 
     @Override
@@ -54,25 +59,19 @@ public class DrawingREPOImpl implements DrawingREPO {
     @Override
     public Drawing getDrawing(int id) {
         // Buscar i tornar un dibuix per la seva ID
-        for (Drawing drawing : drawings) {
-            if (drawing.getId() == id) {
-                return drawing;
-            }
-        }
-        return null;
+
+        Drawing drawing = jdbcTemplate.queryForObject("SELECT * FROM drawing WHERE id = ?",
+                new BeanPropertyRowMapper<>(Drawing.class), id);
+        System.out.println(drawing.getUser().getUsername());
+        return drawing;
     }
 
     @Override
     public boolean modifyFigures(int id, String figures, String newName, int size, User user) {
         // Modificar les figures, nom i mida d'un dibuix per la seva ID
-        for (Drawing drawing : drawings) {
-            if (drawing.getId() == id && Objects.equals(drawing.getUser().getUsername(), user.getUsername())) {
-                drawing.setFigures(figures);
-                drawing.setName(newName);
-                drawing.setNumFigures(size);
-                return true;
-            }
-        }
-        return false;
+        jdbcTemplate.update("UPDATE `drawing` SET `figures` = ?, `numFigures` = ?, `date` = ? " +
+                                "WHERE `drawing`.`id` = ? AND `drawing`.`idUser` = ?;",
+                                figures, size, LocalDate.now(), id, user.getId());
+        return true;
     }
 }

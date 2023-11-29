@@ -16,7 +16,6 @@ public class Drawing {
         this.name = name;
         this.user = user;
         this.figures = figures;
-        this.numFigures = numFigures;
         this.date = LocalDate.now();
     }
 
@@ -30,10 +29,6 @@ public class Drawing {
 
     public LocalDate getDate() {
         return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
     }
 
     public int getId() {

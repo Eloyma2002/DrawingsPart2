@@ -4,20 +4,14 @@ import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Exceptions.UserDoesntExist;
 import com.esliceu.Drawings.Exceptions.UserExist;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Repository
 public class UserREPOImpl implements UserREPO {
-
     @Autowired
     JdbcTemplate jdbcTemplate;
-
-    // Llista que emmagatzema els usuaris registrats com a base de dades
-    static List<User> users = new ArrayList<>();
 
     @Override
     public void saveUser(User user) throws UserExist {
@@ -39,11 +33,13 @@ public class UserREPOImpl implements UserREPO {
 
     @Override
     public User getUser(String username, String password) throws UserDoesntExist {
-        String nameAndLastname = jdbcTemplate.queryForObject
-                ("SELECT nameAndLastname FROM `user` WHERE `username` = ? AND `password` = ?;",
-                        String.class, username, password);
-        User user = new User(username, nameAndLastname, password);
+        System.out.println("DENTRO");
 
+        User user = jdbcTemplate.queryForObject
+                    ("SELECT * FROM `user` WHERE `username` = ? AND `password` = ?;",
+                            new BeanPropertyRowMapper<>(User.class), username, password);
+
+        System.out.println("USER: " + user);
         return user;
     }
 }

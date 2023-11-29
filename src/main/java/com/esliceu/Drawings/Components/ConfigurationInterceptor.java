@@ -12,6 +12,6 @@ public class ConfigurationInterceptor implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new SessionInterceptor()).addPathPatterns("/geoform", "/myList", "/allLists",
                                                                     "/viewDrawing", "/modifyDrawing", "/error",
-                                                                    "configuration");
+                                                                    "/confirmation");
     }
 }

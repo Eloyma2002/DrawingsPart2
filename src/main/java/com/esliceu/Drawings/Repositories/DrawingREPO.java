@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface DrawingREPO {
 
-    boolean save(Drawing dr);
+    boolean save(Drawing dr, User user);
 
     List<Drawing> loadAllLists();
 
