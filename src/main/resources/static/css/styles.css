@@ -15,12 +15,16 @@ canvas {
     border: 2px solid black;
 }
 
+.canvas {
+    left: 40vw;
+}
+
 .error {
     display: flex;
     justify-content: center;
     margin: 0 auto;
     color: rgb(215, 90, 90);
-    text-aling: center;
+    text-align: center;
 }
 
 .principal {
