@@ -11,6 +11,7 @@ const buttonSend = document.querySelector('#send');
 const inputJSON = document.querySelector('#json');
 const list = document.querySelector('#list');
 const buttonDraw = document.querySelector('#draw');
+const visualization = document.querySelector('visualization');
 
 // Configuración del canvas
 canvas.width = 400;
@@ -122,6 +123,18 @@ canvas.addEventListener("mouseup", () => {
     }
     isMouseDrawing = false;
 });
+
+visualization.addEventListener('change', function() {
+                // Obtener todos los elementos de tipo radio con name="visualization"
+                var radios = document.querySelectorAll('input[name="visualization"]');
+
+                // Iterar sobre los radios para encontrar el marcado
+                radios.forEach(function(radio) {
+                    if (radio.checked) {
+                        console.log('El radio marcado es:', radio.value);
+                    }
+                });
+            });
 
 // Genera un nombre de imagen aleatorio
 nameImage.value = randomName();

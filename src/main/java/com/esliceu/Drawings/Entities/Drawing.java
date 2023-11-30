@@ -12,6 +12,9 @@ public class Drawing {
     private int numFigures;
     private LocalDate date;
 
+    private int idUser;
+
+
     public Drawing() {
 
     }
@@ -49,7 +52,17 @@ public class Drawing {
     public void setName(String name) {
         this.name = name;
     }
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
 
+    public int getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(int idUser) {
+        this.idUser = idUser;
+    }
     public User getUser() {
         return user;
     }

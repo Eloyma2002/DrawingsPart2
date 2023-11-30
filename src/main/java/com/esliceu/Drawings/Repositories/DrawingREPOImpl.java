@@ -32,7 +32,21 @@ public class DrawingREPOImpl implements DrawingREPO {
     @Override
     public List<Drawing> loadAllLists() {
         // Tornar la llista completa de dibuixos
-        return drawings;
+        List<Drawing> myDrawings = jdbcTemplate.query("SELECT id, name, figures, numFigures, date, idUser FROM drawing",
+                new BeanPropertyRowMapper<>(Drawing.class));
+
+        for (Drawing drawing : myDrawings) {
+            drawing.setUser(getUserById(drawing.getIdUser()));
+        }
+
+        return myDrawings;
+    }
+
+    private User getUserById(int idUser) {
+        User user = jdbcTemplate.queryForObject
+                ("SELECT * FROM `user` WHERE `id` = ?",
+                        new BeanPropertyRowMapper<>(User.class), idUser);
+        return user;
     }
 
     @Override
@@ -40,11 +54,11 @@ public class DrawingREPOImpl implements DrawingREPO {
         // Filtrar i tornar la llista de dibuixos pertanyents a un usuari específic
 
         List<Drawing> myDrawings = jdbcTemplate.query("SELECT id, name, figures, numFigures, date " +
-                                                          "FROM drawing WHERE idUser = ?",
-                                                          new BeanPropertyRowMapper<>(Drawing.class), user.getId());
+                        "FROM drawing WHERE idUser = ?",
+                new BeanPropertyRowMapper<>(Drawing.class), user.getId());
 
         for (Drawing drawing : myDrawings) {
-           drawing.setUser(user);
+            drawing.setUser(user);
         }
 
         return myDrawings;
@@ -64,16 +78,18 @@ public class DrawingREPOImpl implements DrawingREPO {
     public Drawing getDrawing(int id) {
         // Buscar i tornar un dibuix per la seva ID
 
-        return jdbcTemplate.queryForObject("SELECT * FROM drawing WHERE id = ?",
-                        new BeanPropertyRowMapper<>(Drawing.class), id);
+        Drawing drawing = jdbcTemplate.queryForObject("SELECT * FROM drawing WHERE id = ?",
+                new BeanPropertyRowMapper<>(Drawing.class), id);
+        drawing.setUser(getUserById(drawing.getIdUser()));
+        return drawing;
     }
 
     @Override
     public boolean modifyFigures(int id, String figures, String newName, int size, User user) {
         // Modificar les figures, nom i mida d'un dibuix per la seva ID
         jdbcTemplate.update("UPDATE `drawing` SET `figures` = ?, `numFigures` = ?, `date` = ? " +
-                                "WHERE `drawing`.`id` = ? AND `drawing`.`idUser` = ?;",
-                                figures, size, LocalDate.now(), id, user.getId());
+                        "WHERE `drawing`.`id` = ? AND `drawing`.`idUser` = ?;",
+                figures, size, LocalDate.now(), id, user.getId());
         return true;
     }
 }
