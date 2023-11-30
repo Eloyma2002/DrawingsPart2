@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 // Mapeig del servlet per a la pàgina de la meva llista
@@ -25,8 +26,25 @@ public class AllListsController {
     @GetMapping("/allLists")
     public String getAllLists(Model model, HttpServletRequest req) {
 
-        // Carregar la llista de dibuixos específics de l'usuari
-        List<Drawing> drawings = drawingServices.loadAll();
+        // Obtenim la sessió actual
+        HttpSession session = req.getSession();
+
+        // Obté l'usuari actual des de la sessió
+        User user = (User) session.getAttribute("user");
+
+        // Carregar la llista de tots els dibuixos
+        List<Drawing> allDrawings = drawingServices.loadAll();
+
+        // Carrega només els teus dibuixos i els públics s'altres usuaris
+        List<Drawing> drawings = new ArrayList<>();
+        for (Drawing drawing : allDrawings) {
+            if (drawing.getIdUser() != user.getId() && drawing.getView()) {
+                drawings.add(drawing);
+            }
+            if (drawing.getIdUser() == user.getId()) {
+                drawings.add(drawing);
+            }
+        }
 
         // Configurar l'atribut a la sol·licitud amb la llista de tots els dibuixos
         model.addAttribute("drawings", drawings);

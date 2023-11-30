@@ -29,14 +29,25 @@ public class GeoformController {
 
     // Gestionar les sol·licituds POST en enviar el formulari de registre
     @PostMapping("/geoform")
-    public String postGeoform(Model model, @RequestParam String json, @RequestParam String name, HttpServletRequest req){
+    public String postGeoform(Model model, @RequestParam String json, @RequestParam String name, HttpServletRequest req,
+                              @RequestParam String viewType){
+
+        boolean view;
+        if (viewType.equals("1")) {
+            view = true;
+        } else if (viewType.equals("0")) {
+            view = false;
+        } else {
+            model.addAttribute("error", "Error assigning display type");
+            return "error";
+        }
 
         // Obtenir l'usuari de la sessió actual
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
 
         // Guardar el dibuix a la base de dades
-        if (drawingServices.save(name, user, json)) {
+        if (drawingServices.save(name, user, json, view)) {
             model.addAttribute("confirmation", "Your drawing is saved");
             return "confirmation";
         } else {

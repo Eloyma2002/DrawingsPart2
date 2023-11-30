@@ -11,7 +11,9 @@ const buttonSend = document.querySelector('#send');
 const inputJSON = document.querySelector('#json');
 const list = document.querySelector('#list');
 const buttonDraw = document.querySelector('#draw');
-const visualization = document.querySelector('visualization');
+const publicRadio = document.querySelector("#public");
+const privateRadio = document.querySelector("#private");
+const viewType = document.querySelector('#viewType');
 
 // Configuración del canvas
 canvas.width = 400;
@@ -28,6 +30,8 @@ let isMouseDrawing = false;
 let content = [];
 let lineContent = [];
 let isDrawingEnabled = false;
+console.log(publicRadio.checked);
+console.log(privateRadio.checked);
 
 // Establece el color del botón de dibujo según el estado
 buttonDraw.style.backgroundColor = isDrawingEnabled ? 'green' : 'red';
@@ -38,6 +42,13 @@ select.addEventListener("change", function () {
 });
 
 buttonSend.addEventListener("click", function () {
+
+    if (publicRadio.checked) {
+        viewType.value = "1";
+    } else {
+        viewType.value = "0";
+    }
+
     inputJSON.value = JSON.stringify(content);
 });
 
@@ -123,18 +134,6 @@ canvas.addEventListener("mouseup", () => {
     }
     isMouseDrawing = false;
 });
-
-visualization.addEventListener('change', function() {
-                // Obtener todos los elementos de tipo radio con name="visualization"
-                var radios = document.querySelectorAll('input[name="visualization"]');
-
-                // Iterar sobre los radios para encontrar el marcado
-                radios.forEach(function(radio) {
-                    if (radio.checked) {
-                        console.log('El radio marcado es:', radio.value);
-                    }
-                });
-            });
 
 // Genera un nombre de imagen aleatorio
 nameImage.value = randomName();

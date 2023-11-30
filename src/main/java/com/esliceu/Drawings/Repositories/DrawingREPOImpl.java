@@ -24,15 +24,16 @@ public class DrawingREPOImpl implements DrawingREPO {
     @Override
     public boolean save(Drawing drawing, User user) {
         // Assignar una ID única al dibuix i afegir-lo a la llista
-        jdbcTemplate.update("INSERT INTO `drawing` (`name`, `figures`, `numFigures`, `date`, `idUser`) VALUES (?, ?, ?, ?, ?);",
-                drawing.getName(), drawing.getFigures(), drawing.getNumFigures(), drawing.getDate(), user.getId());
+        jdbcTemplate.update("INSERT INTO `drawing` (`name`, `figures`, `numFigures`, `date`, `idUser`, `view`) " +
+                                "VALUES (?, ?, ?, ?, ?, ?);",
+                drawing.getName(), drawing.getFigures(), drawing.getNumFigures(), drawing.getDate(), user.getId(), drawing.getView());
         return true;
     }
 
     @Override
     public List<Drawing> loadAllLists() {
         // Tornar la llista completa de dibuixos
-        List<Drawing> myDrawings = jdbcTemplate.query("SELECT id, name, figures, numFigures, date, idUser FROM drawing",
+        List<Drawing> myDrawings = jdbcTemplate.query("SELECT id, name, figures, numFigures, date, idUser, view FROM drawing",
                 new BeanPropertyRowMapper<>(Drawing.class));
 
         for (Drawing drawing : myDrawings) {
@@ -53,7 +54,7 @@ public class DrawingREPOImpl implements DrawingREPO {
     public List<Drawing> loadMyList(User user) {
         // Filtrar i tornar la llista de dibuixos pertanyents a un usuari específic
 
-        List<Drawing> myDrawings = jdbcTemplate.query("SELECT id, name, figures, numFigures, date " +
+        List<Drawing> myDrawings = jdbcTemplate.query("SELECT id, name, figures, numFigures, date, view " +
                         "FROM drawing WHERE idUser = ?",
                 new BeanPropertyRowMapper<>(Drawing.class), user.getId());
 

@@ -13,16 +13,17 @@ public class Drawing {
     private LocalDate date;
 
     private int idUser;
-
+    private boolean view;
 
     public Drawing() {
 
     }
-    public Drawing(String name, User user, String figures) {
+    public Drawing(String name, User user, String figures, boolean view) {
         this.name = name;
         this.user = user;
         this.figures = figures;
         this.date = LocalDate.now();
+        this.view = view;
     }
 
     public int getNumFigures() {
@@ -33,6 +34,13 @@ public class Drawing {
         this.numFigures = numFigures;
     }
 
+    public boolean getView() {
+        return view;
+    }
+
+    public void setView(boolean view) {
+        this.view = view;
+    }
     public LocalDate getDate() {
         return date;
     }

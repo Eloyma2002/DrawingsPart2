@@ -19,10 +19,13 @@ public class DrawingServices {
     DrawingREPO drawingREPO;
 
     // Mètode per desar un dibuix
-    public boolean save(String name, User user, String json) {
-        Drawing drawing = new Drawing(name, user, json);
+    public boolean save(String name, User user, String json, boolean view) {
+        Drawing drawing = new Drawing(name, user, json, view);
 
         try {
+            // Assignam si el dibuix es públic o privat
+            drawing.setView(view);
+
             // Intentar parsejar el JSON i obtenir el nombre de figures
             int numFigures = getNumFigures(json);
             drawing.setNumFigures(numFigures);

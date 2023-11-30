@@ -25,6 +25,8 @@ public class ViewDrawingController {
         // Obtindre el dibuix des del servei de dibuixos
         Drawing drawing = drawingServices.getDrawing(drawingId);
 
+        if (!drawing.getView() && )
+
         // Configurar l'atribut en la sol·licitud amb el JSON del dibuix
         model.addAttribute("json", drawing.getFigures());
         return "viewDrawing";
