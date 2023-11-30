@@ -33,13 +33,11 @@ public class UserREPOImpl implements UserREPO {
 
     @Override
     public User getUser(String username, String password) throws UserDoesntExist {
-        System.out.println("DENTRO");
 
         User user = jdbcTemplate.queryForObject
                     ("SELECT * FROM `user` WHERE `username` = ? AND `password` = ?;",
                             new BeanPropertyRowMapper<>(User.class), username, password);
 
-        System.out.println("USER: " + user);
         return user;
     }
 }

@@ -12,6 +12,9 @@ public class Drawing {
     private int numFigures;
     private LocalDate date;
 
+    public Drawing() {
+
+    }
     public Drawing(String name, User user, String figures) {
         this.name = name;
         this.user = user;
