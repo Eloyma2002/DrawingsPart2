@@ -53,8 +53,8 @@ public class DrawingServices {
     }
 
     // Mètode per carregar la llista de dibuixos d'un usuari específic
-    public List<Drawing> loadMyList(User user) {
-        return drawingREPO.loadMyList(user);
+    public List<Drawing> loadMyTrash(User user) {
+        return drawingREPO.loadMyTrash(user);
     }
 
     // Mètode per eliminar un dibuix
@@ -83,5 +83,9 @@ public class DrawingServices {
             return false;
         }
         return false;
+    }
+
+    public boolean deleteTrash(int drawingId, User user) {
+        return drawingREPO.deleteTrash(drawingId, user);
     }
 }

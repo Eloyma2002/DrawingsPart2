@@ -13,9 +13,11 @@ public interface DrawingREPO {
 
     List<Drawing> loadAllLists();
 
-    List<Drawing> loadMyList(User user);
+    List<Drawing> loadMyTrash(User user);
 
     boolean deleteDrawing(int id, User user);
+
+    boolean deleteTrash(int id, User user);
 
     Drawing getDrawing(int id);
 

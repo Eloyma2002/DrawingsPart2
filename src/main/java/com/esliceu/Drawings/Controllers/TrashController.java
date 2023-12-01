@@ -3,7 +3,6 @@ package com.esliceu.Drawings.Controllers;
 import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Services.DrawingServices;
-import com.esliceu.Drawings.Services.UserServices;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +16,13 @@ import java.util.List;
 
 // Mapeig del servlet per a la pàgina de la meva llista
 @Controller
-public class MyListController {
+public class TrashController {
 
     @Autowired
     // Serveis per gestionar els dibuixos
     DrawingServices drawingServices;
 
-    @GetMapping("/myList")
+    @GetMapping("/trash")
     public String getMyList(Model model, HttpServletRequest req) {
 
         // Obtenir l'usuari de la sessió actual
@@ -31,14 +30,14 @@ public class MyListController {
         User user = (User) session.getAttribute("user");
 
         // Carregar la llista de dibuixos específics de l'usuari
-        List<Drawing> drawings = drawingServices.loadMyList(user);
+        List<Drawing> drawings = drawingServices.loadMyTrash(user);
 
         // Configurar l'atribut a la sol·licitud amb la llista de dibuixos de l'usuari
         model.addAttribute("drawings", drawings);
-        return "myList";
+        return "trash";
     }
 
-    @PostMapping("/myList")
+    @PostMapping("/trash")
     public String postMyList(Model model, @RequestParam int drawingId, HttpServletRequest req) {
         // Obté l'ID del dibuix a eliminar des del formulari
 
@@ -48,7 +47,7 @@ public class MyListController {
         // Obté l'usuari actual des de la sessió
         User user = (User) session.getAttribute("user");
 
-        if (drawingServices.delete(drawingId, user)) {
+        if (drawingServices.deleteTrash(drawingId, user)) {
             // Indiquem que l'usuari ha esborrat correctament el dibuix
             model.addAttribute("confirmation", "Your drawing is deleted");
             return "confirmation";

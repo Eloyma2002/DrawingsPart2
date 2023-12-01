@@ -51,11 +51,11 @@ public class DrawingREPOImpl implements DrawingREPO {
     }
 
     @Override
-    public List<Drawing> loadMyList(User user) {
+    public List<Drawing> loadMyTrash(User user) {
         // Filtrar i tornar la llista de dibuixos pertanyents a un usuari específic
 
         List<Drawing> myDrawings = jdbcTemplate.query("SELECT id, name, figures, numFigures, date, view " +
-                        "FROM drawing WHERE idUser = ?",
+                        "FROM trash WHERE idUser = ?",
                 new BeanPropertyRowMapper<>(Drawing.class), user.getId());
 
         for (Drawing drawing : myDrawings) {
@@ -69,7 +69,23 @@ public class DrawingREPOImpl implements DrawingREPO {
     public boolean deleteDrawing(int id, User user) {
         // Eliminar un dibuix si coincideix amb la ID i l'id de l'usuari proporcionats
 
+        Drawing drawing = getDrawing(id);
+
+        jdbcTemplate.update("INSERT INTO `trash` (`id`, `name`, `figures`, `numFigures`, `date`, `idUser`, `view`) "
+                              + "VALUES (?, ?, ?, ?, ?, ?, ?);", drawing.getId(), drawing.getName(), drawing.getFigures()
+                              , drawing.getNumFigures(), drawing.getDate(), user.getId(), drawing.getView());
+
         int rowsDeleted = jdbcTemplate.update("DELETE FROM drawing WHERE id = ? AND idUser = ?", id, user.getId());
+
+        // Si rowsDeletes es major que 0, significa que hi ha una filera eliminada
+        return rowsDeleted > 0;
+    }
+
+    @Override
+    public boolean deleteTrash(int id, User user) {
+        // Eliminar un dibuix de la paperera si coincideix amb la ID i l'id de l'usuari proporcionats
+
+        int rowsDeleted = jdbcTemplate.update("DELETE FROM trash WHERE id = ? AND idUser = ?", id, user.getId());
 
         // Si rowsDeletes es major que 0, significa que hi ha una filera eliminada
         return rowsDeleted > 0;
