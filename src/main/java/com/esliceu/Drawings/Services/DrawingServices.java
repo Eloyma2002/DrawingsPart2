@@ -2,6 +2,7 @@ package com.esliceu.Drawings.Services;
 
 import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
+import com.esliceu.Drawings.Entities.Version;
 import com.esliceu.Drawings.Repositories.DrawingREPO;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -9,6 +10,10 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.Year;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,7 +25,9 @@ public class DrawingServices {
 
     // Mètode per desar un dibuix
     public boolean save(String name, User user, String json, boolean view) {
-        Drawing drawing = new Drawing(name, user, json, view);
+        Drawing drawing = new Drawing(name, user, view);
+        drawing.setIdUser(user.getId());
+        Version version = new Version(0, 0, 0, json, Timestamp.from(Instant.now()));
 
         try {
             // Assignam si el dibuix es públic o privat
@@ -28,8 +35,8 @@ public class DrawingServices {
 
             // Intentar parsejar el JSON i obtenir el nombre de figures
             int numFigures = getNumFigures(json);
-            drawing.setNumFigures(numFigures);
-            if (drawing.getNumFigures() == 0) {
+            version.setNumFigures(numFigures);
+            if (version.getNumFigures() == 0) {
                 return false;
             }
         } catch (Exception e) {
@@ -37,7 +44,7 @@ public class DrawingServices {
         }
 
         // Desar el dibuix a la base de dades
-        drawingREPO.save(drawing, user);
+        drawingREPO.save(drawing, user, version);
         return true;
     }
 
@@ -58,8 +65,11 @@ public class DrawingServices {
     }
 
     // Mètode per eliminar un dibuix
-    public boolean delete(int id, User user) {
-        return drawingREPO.deleteDrawing(id, user);
+    public boolean delete(Drawing drawing) {
+        if (drawing.isTrash()) {
+            return drawingREPO.deleteTrash(drawing);
+        }
+        return drawingREPO.deleteDrawing(drawing);
     }
 
     // Mètode per obtenir un dibuix pel seu ID
@@ -69,14 +79,15 @@ public class DrawingServices {
     }
 
     // Mètode per modificar un dibuix ja creat anteriorment
-    public boolean modify(int id, String figures, String newName, User user, Drawing drawing) {
+    public boolean modify(int idDrawing, String figures, String newName, User user, Drawing drawing) {
         JSONParser parser = new JSONParser();
 
         try {
             // Intentar parsejar el JSON i obtenir el nombre de figures
             JSONArray jsonArray = (JSONArray) parser.parse(figures);
+            Version version = new Version(0, idDrawing, jsonArray.size(), figures, Timestamp.from(Instant.now()));
             if (Objects.equals(user.getUsername(), drawing.getUser().getUsername())) {
-                drawingREPO.modifyFigures(id, figures, newName, jsonArray.size(), user);
+                drawingREPO.modifyFigures(version);
                 return true;
             }
         } catch (Exception e) {
@@ -85,7 +96,7 @@ public class DrawingServices {
         return false;
     }
 
-    public boolean deleteTrash(int drawingId, User user) {
-        return drawingREPO.deleteTrash(drawingId, user);
+    public boolean deleteTrash(int drawingId) {
+        return drawingREPO.deleteTrash(getDrawing(drawingId));
     }
 }

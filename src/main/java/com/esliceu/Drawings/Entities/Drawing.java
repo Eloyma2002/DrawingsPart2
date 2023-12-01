@@ -8,30 +8,20 @@ public class Drawing {
     private int id;
     private String name;
     private User user;
-    private String figures;
-    private int numFigures;
-    private LocalDate date;
-
     private int idUser;
     private boolean view;
+    private String date;
+    private boolean trash;
 
     public Drawing() {
 
     }
-    public Drawing(String name, User user, String figures, boolean view) {
+    public Drawing(String name, User user,boolean view) {
         this.name = name;
         this.user = user;
-        this.figures = figures;
-        this.date = LocalDate.now();
         this.view = view;
-    }
-
-    public int getNumFigures() {
-        return numFigures;
-    }
-
-    public void setNumFigures(int numFigures) {
-        this.numFigures = numFigures;
+        this.date = String.valueOf(LocalDate.now());
+        this.trash = false;
     }
 
     public boolean getView() {
@@ -40,9 +30,6 @@ public class Drawing {
 
     public void setView(boolean view) {
         this.view = view;
-    }
-    public LocalDate getDate() {
-        return date;
     }
 
     public int getId() {
@@ -60,9 +47,7 @@ public class Drawing {
     public void setName(String name) {
         this.name = name;
     }
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
+
 
     public int getIdUser() {
         return idUser;
@@ -79,11 +64,20 @@ public class Drawing {
         this.user = user;
     }
 
-    public String getFigures() {
-        return figures;
+    public boolean isView() {
+        return view;
     }
 
-    public void setFigures(String figures) {
-        this.figures = figures;
+    public boolean isTrash() {
+        return trash;
     }
+
+    public void setTrash(boolean trash) {
+        this.trash = trash;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
 }

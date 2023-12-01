@@ -47,7 +47,7 @@ public class TrashController {
         // Obté l'usuari actual des de la sessió
         User user = (User) session.getAttribute("user");
 
-        if (drawingServices.deleteTrash(drawingId, user)) {
+        if (drawingServices.deleteTrash(drawingId)) {
             // Indiquem que l'usuari ha esborrat correctament el dibuix
             model.addAttribute("confirmation", "Your drawing is deleted");
             return "confirmation";

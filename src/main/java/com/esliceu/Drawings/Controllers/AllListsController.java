@@ -1,8 +1,11 @@
 package com.esliceu.Drawings.Controllers;
 
+import com.esliceu.Drawings.DTO.DrawingDTO;
 import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
+import com.esliceu.Drawings.Entities.Version;
 import com.esliceu.Drawings.Services.DrawingServices;
+import com.esliceu.Drawings.Services.VersionServices;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,10 @@ public class AllListsController {
     // Serveis per gestionar els dibuixos
     DrawingServices drawingServices;
 
+    @Autowired
+    // Servei per gestionar les versions
+    VersionServices versionServices;
+
     @GetMapping("/allLists")
     public String getAllLists(Model model, HttpServletRequest req) {
 
@@ -38,16 +45,33 @@ public class AllListsController {
         // Carrega només els teus dibuixos i els públics s'altres usuaris
         List<Drawing> drawings = new ArrayList<>();
         for (Drawing drawing : allDrawings) {
+            if (!drawing.isTrash()) {
+                drawings.add(drawing);
+                continue;
+            }
             if (drawing.getIdUser() != user.getId() && drawing.getView()) {
                 drawings.add(drawing);
+                continue;
             }
             if (drawing.getIdUser() == user.getId()) {
                 drawings.add(drawing);
             }
         }
 
+        // Transformam la llista anterior al objecte DrawingDTO per mostrar a l'usuari només el que volem
+        List<DrawingDTO> drawingDTOS = new ArrayList<>();
+        for (Drawing drawing : drawings) {
+            Version version = versionServices.getLastVersion(drawing.getId());
+            DrawingDTO drawingDTO = new DrawingDTO(drawing.getId(), version.getNumFigures(), drawing.getIdUser(),
+                                        drawing.isView(), drawing.getName(), drawing.getUser().getUsername(),
+                                        version.getFigures(), drawing.getDate(), version.getDateModify());
+            drawingDTOS.add(drawingDTO);
+            System.out.println("DATE: " + drawingDTO.getDateCreated());
+        }
+
+
         // Configurar l'atribut a la sol·licitud amb la llista de tots els dibuixos
-        model.addAttribute("drawings", drawings);
+        model.addAttribute("drawings", drawingDTOS);
         return "allLists";
     }
 
@@ -61,7 +85,10 @@ public class AllListsController {
         // Obté l'usuari actual des de la sessió
         User user = (User) session.getAttribute("user");
 
-        if (drawingServices.delete(drawingId, user)) {
+        // Obtenim el dibuix mitjançant l'Id
+        Drawing drawing = drawingServices.getDrawing(drawingId);
+
+        if (drawingServices.delete(drawing)) {
             // Indiquem que l'usuari ha esborrat correctament el dibuix
             model.addAttribute("confirmation", "Your drawing is deleted");
             return "confirmation";

@@ -48,7 +48,8 @@
                         <thead>
                         <tr>
                             <th><span>User</span></th>
-                            <th><span>Created</span></th>
+                            <th><span>Date created</span></th>
+                            <th><span>Date modify</span></th>
                             <th class="text-center"><span>Name</span></th>
                             <th><span>Number Objects</span></th>
                             <th><span>Actions</span></th>
@@ -59,10 +60,13 @@
                             <td>
                                 <img src="https://bootdey.com/img/Content/avatar/avatar1.png"
                                      alt="">
-                                <p>[[${drawing.getUser().getUsername()}]]</p>
+                                <p>[[${drawing.getUsername()}]]</p>
                             </td>
                             <td>
-                                [[${drawing.getDate()}]]
+                                [[${drawing.getDateCreated()}]]
+                            </td>
+                            <td>
+                                [[${drawing.getDateModify()}]]
                             </td>
                             <td class="text-center">
                                 <span class="label label-default">[[${drawing.getName()}]]</span>

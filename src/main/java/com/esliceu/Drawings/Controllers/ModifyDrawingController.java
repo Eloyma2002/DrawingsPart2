@@ -2,7 +2,9 @@ package com.esliceu.Drawings.Controllers;
 
 import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
+import com.esliceu.Drawings.Entities.Version;
 import com.esliceu.Drawings.Services.DrawingServices;
+import com.esliceu.Drawings.Services.VersionServices;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.json.simple.parser.ParseException;
@@ -24,6 +26,10 @@ public class ModifyDrawingController {
     // Serveis per gestionar els dibuixos
     DrawingServices drawingServices;
 
+    @Autowired
+    // Servei per gestionar les versions
+    VersionServices versionServices;
+
     @GetMapping("/modifyDrawing")
     public String getModifyDrawing(Model model, HttpServletRequest req, @RequestParam int drawingId) {
         // Obtindre l'ID del dibuix a visualitzar des del formulari
@@ -34,13 +40,16 @@ public class ModifyDrawingController {
         // Obtindre el dibuix des del servei de dibuixos
         Drawing drawing = drawingServices.getDrawing(drawingId);
 
+        // Obtenir la versió més recient del dibuix
+        Version version = versionServices.getLastVersion(drawingId);
+
         if (!Objects.equals(user.getUsername(), drawing.getUser().getUsername())) {
                 model.addAttribute("error", "You cannot modify a drawing that is not yours");
                 return "error";
         }
 
         // Configurar atributs en la sol·licitud per a la pàgina HTML
-        model.addAttribute("json", drawing.getFigures());
+        model.addAttribute("json", version.getFigures());
         model.addAttribute("drawingId", drawing.getId());
         model.addAttribute("name", drawing.getName());
         return "modifyDrawing";
