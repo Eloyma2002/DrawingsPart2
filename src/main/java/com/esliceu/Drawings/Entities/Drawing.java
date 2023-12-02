@@ -1,8 +1,8 @@
 package com.esliceu.Drawings.Entities;
 
 
-import java.time.LocalDate;
-
+import java.sql.Timestamp;
+import java.time.Instant;
 public class Drawing {
 
     private int id;
@@ -10,7 +10,7 @@ public class Drawing {
     private User user;
     private int idUser;
     private boolean view;
-    private String date;
+    private Timestamp date;
     private boolean trash;
 
     public Drawing() {
@@ -20,7 +20,7 @@ public class Drawing {
         this.name = name;
         this.user = user;
         this.view = view;
-        this.date = String.valueOf(LocalDate.now());
+        this.date = Timestamp.from(Instant.now());
         this.trash = false;
     }
 
@@ -76,7 +76,7 @@ public class Drawing {
         this.trash = trash;
     }
 
-    public String getDate() {
+    public Timestamp getDate() {
         return date;
     }
 

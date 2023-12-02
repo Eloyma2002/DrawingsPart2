@@ -36,7 +36,7 @@ public class DrawingREPOImpl implements DrawingREPO {
             ps.setString(1,drawing.getName());
             ps.setInt(2,drawing.getIdUser());
             ps.setBoolean(3, drawing.isView());
-            ps.setString(4,drawing.getDate());
+            ps.setTimestamp(4,drawing.getDate());
             ps.setBoolean(5,drawing.isTrash());
             return ps;
         }, keyHolder);
@@ -47,11 +47,16 @@ public class DrawingREPOImpl implements DrawingREPO {
     }
 
     @Override
-    public List<Drawing> loadAllLists() {
+    public List<Drawing> loadAllLists(User user) {
         // Tornar la llista completa de dibuixos
-        List<Drawing> myDrawings = jdbcTemplate.query("SELECT id, name, idUser, view, date, trash FROM drawing",
-                new BeanPropertyRowMapper<>(Drawing.class));
+        List<Drawing> myDrawings = jdbcTemplate.query("SELECT id, name, idUser, view, date, trash " +
+                                                          "FROM drawing " +
+                                                          "WHERE (idUser = ? AND trash = 0) " +
+                                                          "OR " +
+                                                          "(view = 1 AND trash = 0)",
+                                                          new BeanPropertyRowMapper<>(Drawing.class), user.getId());
 
+        // Assignam a cada dibuix el seu usuari mitjançant l'id del mateix
         for (Drawing drawing : myDrawings) {
             drawing.setUser(getUserById(drawing.getIdUser()));
         }
@@ -69,8 +74,10 @@ public class DrawingREPOImpl implements DrawingREPO {
     public List<Drawing> loadMyTrash(User user) {
         // Filtrar i tornar la llista de dibuixos pertanyents a un usuari específic
 
-        List<Drawing> myDrawings = jdbcTemplate.query("SELECT id, name, figures, numFigures, date, view " +
-                        "FROM trash WHERE idUser = ?",
+        List<Drawing> myDrawings = jdbcTemplate.query("SELECT id, name, idUser, view, date, trash " +
+                        "FROM drawing " +
+                        "WHERE " +
+                        "idUser = ? AND trash = 1;",
                 new BeanPropertyRowMapper<>(Drawing.class), user.getId());
 
         for (Drawing drawing : myDrawings) {
@@ -85,9 +92,9 @@ public class DrawingREPOImpl implements DrawingREPO {
         // Eliminar un dibuix si coincideix amb la ID i l'id de l'usuari proporcionats
         drawing.setTrash(true);
 
-        int rowsUpdated = jdbcTemplate.update("UPDATE drawing SET trash = ? WHERE id = ?;", drawing.isView(), drawing.getId());
+        int rowsUpdated = jdbcTemplate.update("UPDATE drawing SET trash = 1 WHERE id = ?;", drawing.getId());
 
-        // Si rowsUpdated es major que 0, significa que hi ha una filera eliminada
+        // Si rowsUpdated es major que 0, significa que hi ha una filera actualitzada
         return rowsUpdated > 0;
     }
 
@@ -116,12 +123,26 @@ public class DrawingREPOImpl implements DrawingREPO {
     }
 
     @Override
-    public boolean modifyFigures(Version version) {
+    public void modifyFigures(Version version) {
         // Modificar les figures, aficam una nova versió
         jdbcTemplate.update("INSERT INTO `version` (`figures`, `idDrawing`, `dateModify`, `numFigures`) " +
                                 "VALUES (?, ?, ?, ?);",
                                 version.getFigures(), version.getIdDrawing(), version.getDateModify(),
                                 version.getNumFigures());
-        return true;
+    }
+
+    @Override
+    public void changeDrawingName(Drawing drawing, String name) {
+        // Cambiam el nom del dibuix
+        jdbcTemplate.update("UPDATE drawing SET name = ? WHERE id = ?;", name, drawing.getId());
+    }
+
+    @Override
+    public boolean recoverDrawingFromTrash(int drawingId) {
+        // Recupera el dibuix de la paperera
+        int drawingRecover = jdbcTemplate.update("UPDATE drawing SET trash = 0 WHERE id = ?;", drawingId);
+
+        // Si drawingRecover es major que 0, significa que hi ha un dibuix recuperat de la paperera
+        return drawingRecover > 0;
     }
 }

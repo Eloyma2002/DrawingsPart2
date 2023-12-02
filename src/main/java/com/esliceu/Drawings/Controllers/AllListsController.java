@@ -4,6 +4,7 @@ import com.esliceu.Drawings.DTO.DrawingDTO;
 import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Entities.Version;
+import com.esliceu.Drawings.Services.DrawingDTOServices;
 import com.esliceu.Drawings.Services.DrawingServices;
 import com.esliceu.Drawings.Services.VersionServices;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,8 +28,8 @@ public class AllListsController {
     DrawingServices drawingServices;
 
     @Autowired
-    // Servei per gestionar les versions
-    VersionServices versionServices;
+    // Servei per gestionar els dibuixos DTO
+    DrawingDTOServices drawingDTOServices;
 
     @GetMapping("/allLists")
     public String getAllLists(Model model, HttpServletRequest req) {
@@ -40,35 +41,16 @@ public class AllListsController {
         User user = (User) session.getAttribute("user");
 
         // Carregar la llista de tots els dibuixos
-        List<Drawing> allDrawings = drawingServices.loadAll();
+        List<Drawing> allDrawings = drawingServices.loadAll(user);
 
-        // Carrega només els teus dibuixos i els públics s'altres usuaris
-        List<Drawing> drawings = new ArrayList<>();
-        for (Drawing drawing : allDrawings) {
-            if (!drawing.isTrash()) {
-                drawings.add(drawing);
-                continue;
-            }
-            if (drawing.getIdUser() != user.getId() && drawing.getView()) {
-                drawings.add(drawing);
-                continue;
-            }
-            if (drawing.getIdUser() == user.getId()) {
-                drawings.add(drawing);
-            }
+        if (allDrawings == null) {
+            // Gestionar l'excepció per si hi ha un dibuix que no hi hauria d'estar a aquesta llista
+            model.addAttribute("error", "An error occurred while trying to obtain the list of drawings");
+            return "error";
         }
 
         // Transformam la llista anterior al objecte DrawingDTO per mostrar a l'usuari només el que volem
-        List<DrawingDTO> drawingDTOS = new ArrayList<>();
-        for (Drawing drawing : drawings) {
-            Version version = versionServices.getLastVersion(drawing.getId());
-            DrawingDTO drawingDTO = new DrawingDTO(drawing.getId(), version.getNumFigures(), drawing.getIdUser(),
-                                        drawing.isView(), drawing.getName(), drawing.getUser().getUsername(),
-                                        version.getFigures(), drawing.getDate(), version.getDateModify());
-            drawingDTOS.add(drawingDTO);
-            System.out.println("DATE: " + drawingDTO.getDateCreated());
-        }
-
+        List<DrawingDTO> drawingDTOS = drawingDTOServices.transformListDrawingToDrawingDTO(allDrawings);
 
         // Configurar l'atribut a la sol·licitud amb la llista de tots els dibuixos
         model.addAttribute("drawings", drawingDTOS);
@@ -88,13 +70,13 @@ public class AllListsController {
         // Obtenim el dibuix mitjançant l'Id
         Drawing drawing = drawingServices.getDrawing(drawingId);
 
-        if (drawingServices.delete(drawing)) {
+        if (drawingServices.delete(drawing, user)) {
             // Indiquem que l'usuari ha esborrat correctament el dibuix
-            model.addAttribute("confirmation", "Your drawing is deleted");
+            model.addAttribute("confirmation", "Your drawing has been moved to your trash");
             return "confirmation";
         }
 
-        // Gestionar l'excepció per a un dibuix no existent configurant un atribut d'error i redirigint a la pàgina de registre
+        // Gestionar l'excepció per si intenten esborrar un dibuix que no es seu
         model.addAttribute("error", "You cant delete this drawing, is not yours");
         return "error";
     }

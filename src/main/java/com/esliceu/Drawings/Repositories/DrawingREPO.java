@@ -12,7 +12,7 @@ public interface DrawingREPO {
 
     void save(Drawing dr, User user, Version version);
 
-    List<Drawing> loadAllLists();
+    List<Drawing> loadAllLists(User user);
 
     List<Drawing> loadMyTrash(User user);
 
@@ -22,7 +22,9 @@ public interface DrawingREPO {
 
     Drawing getDrawing(int id);
 
-    boolean modifyFigures(Version version);
+    void modifyFigures(Version version);
 
+    void changeDrawingName(Drawing drawing, String name);
 
+    boolean recoverDrawingFromTrash(int drawingId);
 }

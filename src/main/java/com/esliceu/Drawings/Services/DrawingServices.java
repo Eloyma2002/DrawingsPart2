@@ -10,10 +10,8 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.Year;
 import java.util.List;
 import java.util.Objects;
 
@@ -55,8 +53,17 @@ public class DrawingServices {
     }
 
     // Mètode per carregar tots els dibuixos
-    public List<Drawing> loadAll() {
-        return drawingREPO.loadAllLists();
+    public List<Drawing> loadAll(User user) {
+
+        // Carrega només els teus dibuixos i els públics s'altres usuaris
+        List<Drawing> allDrawings = drawingREPO.loadAllLists(user);
+
+        for (Drawing drawing : allDrawings) {
+            if (drawing.isTrash() || user.getId() != drawing.getIdUser() && !drawing.isTrash()) {
+                return null;
+            }
+        }
+        return allDrawings;
     }
 
     // Mètode per carregar la llista de dibuixos d'un usuari específic
@@ -64,12 +71,18 @@ public class DrawingServices {
         return drawingREPO.loadMyTrash(user);
     }
 
-    // Mètode per eliminar un dibuix
-    public boolean delete(Drawing drawing) {
-        if (drawing.isTrash()) {
-            return drawingREPO.deleteTrash(drawing);
+    // Mètode per assignar un dibuix a la paperera
+    public boolean delete(Drawing drawing, User user) {
+
+        if (drawing.getIdUser() != user.getId()) {
+            return false;
         }
+
         return drawingREPO.deleteDrawing(drawing);
+    }
+
+    public void changeDrawingName(Drawing drawing, String name) {
+        drawingREPO.changeDrawingName(drawing, name);
     }
 
     // Mètode per obtenir un dibuix pel seu ID
@@ -98,5 +111,19 @@ public class DrawingServices {
 
     public boolean deleteTrash(int drawingId) {
         return drawingREPO.deleteTrash(getDrawing(drawingId));
+    }
+
+    // Recupera el dibuix de la paperera
+    public boolean recoverDrawingFromTrash(int drawingId, User user) {
+
+        // Obté el dibuix mitjançant l'id
+        Drawing drawing = drawingREPO.getDrawing(drawingId);
+
+        // Controlam si el dibuix que intentam recuperar es nostre
+        if (drawing.getIdUser() == user.getId()) {
+            return drawingREPO.recoverDrawingFromTrash(drawingId);
+        }
+
+        return false;
     }
 }

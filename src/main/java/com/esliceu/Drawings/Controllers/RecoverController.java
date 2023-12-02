@@ -18,7 +18,7 @@ import java.util.List;
 
 // Mapeig del servlet per a la pàgina de la meva llista
 @Controller
-public class TrashController {
+public class RecoverController {
 
     @Autowired
     // Serveis per gestionar els dibuixos
@@ -28,36 +28,27 @@ public class TrashController {
     // Serveis per obtenir el dibuixos en DTO
     DrawingDTOServices drawingDTOServices;
 
-    @GetMapping("/trash")
-    public String getMyList(Model model, HttpServletRequest req) {
+    @GetMapping("/recover")
+    public String getMyList() {
+        return "recover";
+    }
 
-        // Obtenir l'usuari de la sessió actual
+    @PostMapping("/recover")
+    public String postMyList(Model model, HttpServletRequest req, @RequestParam int drawingId) {
+        // Obté l'ID del dibuix a eliminar des del formulari
+
+        // Obté l'usuari de la sessió
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
 
-        // Carregar la llista de dibuixos específics de l'usuari
-        List<Drawing> myTrash = drawingServices.loadMyTrash(user);
-
-        // Convertir els dibuixos a drawingDTO per mostrar-los
-        List<DrawingDTO> drawingDTOS = drawingDTOServices.transformListDrawingToDrawingDTO(myTrash);
-
-        // Configurar l'atribut a la sol·licitud amb la llista de dibuixos de l'usuari
-        model.addAttribute("drawings", drawingDTOS);
-        return "trash";
-    }
-
-    @PostMapping("/trash")
-    public String postMyList(Model model, @RequestParam int drawingId, HttpServletRequest req) {
-        // Obté l'ID del dibuix a eliminar des del formulari
-
-        if (drawingServices.deleteTrash(drawingId)) {
+        if (drawingServices.recoverDrawingFromTrash(drawingId, user)) {
             // Indiquem que l'usuari ha esborrat correctament el dibuix
-            model.addAttribute("confirmation", "Your drawing is deleted");
+            model.addAttribute("confirmation", "Your drawing has been recovered");
             return "confirmation";
         }
 
         // Gestionar l'excepció per a un dibuix no existent configurant un atribut d'error i redirigint a la pàgina de registre
-        model.addAttribute("error", "You cant delete this drawing, is not yours");
+        model.addAttribute("error", "You cant recover this drawing, is not yours");
         return "error";
     }
 }

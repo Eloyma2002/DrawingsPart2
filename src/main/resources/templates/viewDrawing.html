@@ -13,7 +13,6 @@
 
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <h2>View</h2>
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-mdb-toggle="collapse"
                 data-mdb-target="#navbarCenteredExample" aria-controls="navbarCenteredExample" aria-expanded="false"
@@ -37,7 +36,9 @@
         </div>
     </div>
 </nav>
-
+<div class="title">    
+    <h2 style="text-align: center; margin-bottom: 2%;">View</h2>
+</div>
 
 <canvas height="400" width="400" id="canvas"></canvas>
 <input type="hidden" id="json" name="json" th:value=${json} readonly>

@@ -10,7 +10,7 @@ public class DrawingDTO {
     private String name;
     private String username;
     private String figures;
-    private String dateCreated;
+    private Timestamp dateCreated;
     private Timestamp dateModify;
 
     public DrawingDTO() {
@@ -18,7 +18,7 @@ public class DrawingDTO {
     }
 
     public DrawingDTO(int id, int numFigures, int idUser, boolean visualization, String name, String username,
-                      String figures, String dateCreated, Timestamp dateModify) {
+                      String figures, Timestamp dateCreated, Timestamp dateModify) {
         this.id = id;
         this.numFigures = numFigures;
         this.idUser = idUser;
@@ -86,11 +86,11 @@ public class DrawingDTO {
         this.figures = figures;
     }
 
-    public String getDateCreated() {
+    public Timestamp getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(String dateCreated) {
+    public void setDateCreated(Timestamp dateCreated) {
         this.dateCreated = dateCreated;
     }
 

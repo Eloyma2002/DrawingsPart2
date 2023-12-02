@@ -43,6 +43,13 @@ public class ModifyDrawingController {
         // Obtenir la versió més recient del dibuix
         Version version = versionServices.getLastVersion(drawingId);
 
+        // Si intenten modificar el dibuix desde la paperera no es podrà fer
+        if (drawing.isTrash()) {
+            model.addAttribute("error", "You cannot modify a drawing that is in the trash");
+            return "error";
+        }
+
+        // Comprovar si el dibuix es del mateix usuari que l'intenta modificar
         if (!Objects.equals(user.getUsername(), drawing.getUser().getUsername())) {
                 model.addAttribute("error", "You cannot modify a drawing that is not yours");
                 return "error";
@@ -63,11 +70,25 @@ public class ModifyDrawingController {
         // Obtenir l'usuari actual des de la sessió
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
+
+        // Obtenir el dibuix mitjançant l'id
         Drawing drawing = drawingServices.getDrawing(drawingId);
+
+        // Obtenir l'ultima versió del dibuix
+        Version version = versionServices.getLastVersion(drawingId);
 
         if (drawingServices.getNumFigures(json) == 0) {
             model.addAttribute("error", "You cannot save a drawing without content");
             return "error";
+        }
+
+        if (version.getFigures().equals(json) && drawing.getName().equals(name)) {
+            model.addAttribute("error", "You cannot modify a drawing without changes");
+            return "error";
+        } else if (version.getFigures().equals(json) && !Objects.equals(drawing.getName(), name)) {
+            drawingServices.changeDrawingName(drawing, name);
+            model.addAttribute("confirmation", "The drawing name has been changed");
+            return "confirmation";
         }
 
         if (drawingServices.modify(drawingId, json, name, user, drawing)) {

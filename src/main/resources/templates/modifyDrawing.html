@@ -5,82 +5,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modify drawing</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/styles.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
-          crossorigin="anonymous">
 </head>
 
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <h2>Modify drawing</h2>
-    <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-mdb-toggle="collapse"
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse"
                 data-mdb-target="#navbarCenteredExample" aria-controls="navbarCenteredExample" aria-expanded="false"
                 aria-label="Toggle navigation">
-            <i class="fas fa-bars"></i>
-        </button>
+                <i class="fas fa-bars"></i>
+            </button>
 
-        <div class="collapse navbar-collapse justify-content-center" id="navbarCenteredExample">
-            <ul class="navbar-nav mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/allLists">All
-                        lists</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/geoform">Draw</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/trash">Trash</a>
-                </li>
-            </ul>
+            <div class="collapse navbar-collapse justify-content-center" id="navbarCenteredExample">
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/allLists">All
+                            lists</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/geoform">Draw</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/trash">Trash</a>
+                    </li>
+                </ul>
+            </div>
         </div>
+    </nav>
+    <div class="title">
+        <h2 style="text-align: center; margin-bottom: 2%;">Modify drawing</h2>
     </div>
-</nav>
-
-
-<div class="container-fluid principal">
-    <div class="row">
-        <div class="col principal">
-            <ul id="list"></ul>
+    <div class="row" style="width: 100vw;">
+        <div class="col-md-3">
+            <ul id="list" class="list-group"></ul>
         </div>
-        <div class="col">
+        <div class="col-md-4">
             <canvas height="400" width="400" id="canvas" style="border: 2px solid black;"></canvas>
-            <p></p>
-            <p class="error">
-                [[${error}]]
-            </p>
         </div>
-        <div class="col principal">
-            <form action="/modifyDrawing" method="post">
-                <input type="button" id="clean" value="Clean">
-                <button type="submit" id="send">Send</button>
-                <input type="button" id="draw" value="Draw"></button>
-                <ul id="list"></ul>
-
-                <p></p>
-                <p>Name: <input type="text" id="name" name="name" th:value=${name}></p>
-                <select name="figure" id="figure">
-                    <option value="triangle">Triangle</option>
-                    <option value="square">Square</option>
-                    <option value="circle">Circle</option>
-                    <option value="star">Star</option>
-                </select>
-                <p></p>
-                <p></p>
-                <p>Color: <input type="color" name="color" id="color"></p>
-                <label for="fill">Fill: <input type="checkbox" name="fill" id="fill"></label>
-                <p></p>
-                <p>Size: <input type="range" name="size" id="size"></p>
-
-                <input type="hidden" name="drawingId" th:value=${drawingId} />
-                <input type="hidden" id="json" name="json" th:value=${json} readonly>
+        <div class="col-md-3" style="border-radius: 5%; background-color: rgb(234, 230, 225);">
+            <form action="/modifyDrawing" method="get" class="form" style="margin: 5%;">
+                <div class="mb-3" style="text-align: center;">
+                    <input type="button" id="clean" value="Clean" class="btn btn-secondary">
+                    <button type="submit" id="send" class="btn btn-primary">Send</button>
+                    <input type="button" id="draw" value="Draw" class="btn btn-success">
+                </div>
+                <div class="mb-3">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" value="." name="name" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="figure">Select Figure:</label>
+                    <select name="figure" id="figure" class="form-control">
+                        <option value="triangle">Triangle</option>
+                        <option value="square">Square</option>
+                        <option value="circle">Circle</option>
+                        <option value="star">Star</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="color">Color:</label>
+                    <input type="color" name="color" id="color" class="form-control">
+                </div>
+                <div class="col mb-1">
+                    <input type="checkbox" name="fill" id="fill" class="form-check-input">
+                    <label for="fill">Fill</label>
+                </div>
+                <div class="mb-3">
+                    <label for="size">Size:</label>
+                    <input type="range" name="size" id="size" class="form-range">
+                </div>
+                <div class="mb-3">
+                    <fieldset>
+                        <legend>Select the type of visualization:</legend>
+                        <div class="form-check">
+                            <input type="radio" id="public" name="visualization" value="public"
+                                class="form-check-input">
+                            <label for="public" class="form-check-label">Public</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" id="private" name="visualization" value="private" checked
+                                class="form-check-input">
+                            <label for="private" class="form-check-label">Private</label>
+                        </div>
+                    </fieldset>
+                </div>
+                <input type="hidden" id="viewType" name="viewType" value="">
+                <input type="hidden" id="json" name="json" value readonly>
             </form>
         </div>
     </div>
-</div>
-
-<script src="/JS/script_modify.js"></script>
+    <script src="/JS/script_modify.js"></script>
 </body>
 
 </html>
