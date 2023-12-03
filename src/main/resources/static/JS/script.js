@@ -14,6 +14,8 @@ const buttonDraw = document.querySelector('#draw');
 const publicRadio = document.querySelector("#public");
 const privateRadio = document.querySelector("#private");
 const viewType = document.querySelector('#viewType');
+const confirmChanges = document.querySelector('#confirmChanges');
+
 
 // Configuración del canvas
 canvas.width = 400;

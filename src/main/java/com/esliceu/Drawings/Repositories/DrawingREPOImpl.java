@@ -12,14 +12,10 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class DrawingREPOImpl implements DrawingREPO {
-
-    // Llista que emmagatzema els dibuixos com a base de dades (cada un enllaçat amb el seu usuari corresponent)
-    static List<Drawing> drawings = new ArrayList<>();
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -102,11 +98,11 @@ public class DrawingREPOImpl implements DrawingREPO {
     public boolean deleteTrash(Drawing drawing) {
         // Eliminar un dibuix de la paperera si coincideix amb la ID i l'id de l'usuari proporcionats
 
-        int versionDeleted = jdbcTemplate.update("DELETE FROM version WHERE idDrawing = ? AND idUser = ?",
-                drawing.getId(), drawing.getIdUser());
+        int versionDeleted = jdbcTemplate.update("DELETE FROM version WHERE idDrawing = ?",
+                                                      drawing.getId());
 
         int drawingDeleted = jdbcTemplate.update("DELETE FROM drawing WHERE id = ? AND idUser = ?",
-                                                  drawing.getId(), drawing.getIdUser());
+                                                      drawing.getId(), drawing.getIdUser());
 
         // Si drawingDeletes es major que 0, significa que hi ha una filera eliminada, el mateix passa amb versionDeleted
         return drawingDeleted > 0 && versionDeleted > 0;

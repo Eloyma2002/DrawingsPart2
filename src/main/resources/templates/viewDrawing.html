@@ -36,11 +36,22 @@
         </div>
     </div>
 </nav>
-<div class="title">    
+<div class="title">
     <h2 style="text-align: center; margin-bottom: 2%;">View</h2>
 </div>
 
-<canvas height="400" width="400" id="canvas"></canvas>
+<div class="col-md-4">
+    <canvas height="400" width="400" id="canvas" style="border: 2px solid black;"></canvas>
+
+    <select id="versionSelect">
+        <tr th:each="version : ${versionList}">
+            <option th:class="${version.getId()}" th:value="${version.getFigures()}">[[${version.getDateModify()}]]</option>
+        </th:each>
+        </tr>
+    </select>
+    
+</div>
+
 <input type="hidden" id="json" name="json" th:value=${json} readonly>
 
 

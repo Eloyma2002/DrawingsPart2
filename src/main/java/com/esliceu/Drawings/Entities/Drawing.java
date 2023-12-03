@@ -3,6 +3,8 @@ package com.esliceu.Drawings.Entities;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
+
 public class Drawing {
 
     private int id;
@@ -12,6 +14,7 @@ public class Drawing {
     private boolean view;
     private Timestamp date;
     private boolean trash;
+    private List<Version> versionList;
 
     public Drawing() {
 
@@ -80,4 +83,14 @@ public class Drawing {
         return date;
     }
 
+    public void setDate(Timestamp date) {
+        this.date = date;
+    }
+    public List<Version> getVersionList() {
+        return versionList;
+    }
+
+    public void setVersionList(List<Version> versionList) {
+        this.versionList = versionList;
+    }
 }

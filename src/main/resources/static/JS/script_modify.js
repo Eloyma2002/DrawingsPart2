@@ -16,6 +16,7 @@ const buttonDraw = document.querySelector('#draw');
 
 // Obtiene la cadena JSON del elemento con id 'JSON' y la parsea
 const jsonString = document.querySelector('#json').value;
+console.log(jsonString);
 const jsonObject = JSON.parse(jsonString);
 
 // Variables 

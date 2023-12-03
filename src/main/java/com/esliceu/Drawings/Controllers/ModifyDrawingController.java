@@ -59,6 +59,7 @@ public class ModifyDrawingController {
         model.addAttribute("json", version.getFigures());
         model.addAttribute("drawingId", drawing.getId());
         model.addAttribute("name", drawing.getName());
+        model.addAttribute("viewType", drawing.isView());
         return "modifyDrawing";
     }
 

@@ -45,7 +45,7 @@
             <canvas height="400" width="400" id="canvas" style="border: 2px solid black;"></canvas>
         </div>
         <div class="col-md-3" style="border-radius: 5%; background-color: rgb(234, 230, 225);">
-            <form action="/modifyDrawing" method="get" class="form" style="margin: 5%;">
+            <form action="/modifyDrawing" method="post" class="form" style="margin: 5%;">
                 <div class="mb-3" style="text-align: center;">
                     <input type="button" id="clean" value="Clean" class="btn btn-secondary">
                     <button type="submit" id="send" class="btn btn-primary">Send</button>
@@ -53,7 +53,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="name">Name:</label>
-                    <input type="text" id="name" value="." name="name" class="form-control">
+                    <input type="text" id="name" th:value="${name}" name="name" class="form-control">
                 </div>
                 <div class="mb-3">
                     <label for="figure">Select Figure:</label>
@@ -91,8 +91,9 @@
                         </div>
                     </fieldset>
                 </div>
-                <input type="hidden" id="viewType" name="viewType" value="">
-                <input type="hidden" id="json" name="json" value readonly>
+                <input type="hidden" id="viewType" name="viewType" th:value=${viewType}>
+                <input type="hidden" id="json" name="json" th:value=${json}>
+                <input type="hidden" id="drawingId" name="drawingId" th:value=${drawingId}>
             </form>
         </div>
     </div>

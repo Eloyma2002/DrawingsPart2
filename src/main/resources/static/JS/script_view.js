@@ -5,15 +5,31 @@ const context = canvas.getContext('2d');
 // Obtiene la cadena JSON del elemento con id 'JSON' y la parsea
 const jsonString = document.querySelector('#json').value;
 const jsonObject = JSON.parse(jsonString);
+cargaFiguras(jsonObject);
+
+// Agregar un controlador de eventos para el cambio en el select
+document.getElementById('versionSelect').addEventListener('change', function () {
+    // Obtener el valor seleccionado
+    var selectedValue = this.value;
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    var jsonObjectVersion = JSON.parse(selectedValue);
+    cargaFiguras(jsonObjectVersion);
+});
 
 // Itera sobre el array de figuras y las dibuja
-jsonObject.forEach(figure => {
-    if (figure.type != "line") {
-        drawFigureSelected(figure);
-    } else {
-        drawLine(figure);
-    }
-});
+function cargaFiguras(jsonObject) {
+    jsonObject.forEach(figure => {
+        context.beginPath();
+        if (figure.type != "line") {
+            drawFigureSelected(figure);
+        } else {
+            drawLine(figure);
+        }
+        context.closePath();
+    });    
+}
+
 
 // Función para dibujar una línea
 function drawLine(lineObject) {
@@ -31,6 +47,7 @@ function drawLine(lineObject) {
 
 // Función para dibujar una figura seleccionada
 function drawFigureSelected(figure) {
+    context.lineWidth = 1;  // Restablecer el grosor de la línea
     context.strokeStyle = figure.color;
     context.fillStyle = figure.fill ? figure.color : "transparent";
 

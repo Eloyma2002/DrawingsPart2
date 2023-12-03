@@ -1,18 +1,11 @@
 package com.esliceu.Drawings.Repositories;
 
-import com.esliceu.Drawings.Entities.Drawing;
-import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Entities.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -29,5 +22,11 @@ public class VersionREPOImpl implements VersionREPO {
                 "SELECT * FROM version WHERE idDrawing = ? ORDER BY id DESC LIMIT 1",
                 new BeanPropertyRowMapper<>(Version.class), idDrawing
         );
+    }
+
+    @Override
+    public List<Version> getAllVersion(int id) {
+        return jdbcTemplate.query("SELECT * FROM version WHERE idDrawing = ? ORDER BY id DESC",
+                new BeanPropertyRowMapper<>(Version.class), id);
     }
 }

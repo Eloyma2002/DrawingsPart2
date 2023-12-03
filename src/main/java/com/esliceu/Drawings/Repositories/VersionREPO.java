@@ -10,6 +10,8 @@ import java.util.List;
 @Repository
 public interface VersionREPO {
 
-Version getLastVersion (int drawing);
+    Version getLastVersion(int drawing);
+
+    List<Version> getAllVersion(int id);
 
 }

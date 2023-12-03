@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drawings list</title>
+    <title>Drawing list</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
@@ -12,10 +12,6 @@
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="title">
-            <h2 style="text-align: center; margin-bottom: 2%;">Drawing list</h2>
-        </div>
-
         <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-mdb-toggle="collapse"
                 data-mdb-target="#navbarCenteredExample" aria-controls="navbarCenteredExample" aria-expanded="false"
@@ -26,8 +22,7 @@
             <div class="collapse navbar-collapse justify-content-center" id="navbarCenteredExample">
                 <ul class="navbar-nav mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/allLists">All
-                            lists</a>
+                        <a class="nav-link active" aria-current="page" href="/allLists"> All lists</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/geoform">Draw</a>
@@ -42,6 +37,9 @@
 
 
     <div class="container">
+        <div class="title">
+            <h2 style="text-align: center; margin-bottom: 2%;">Drawing list</h2>
+        </div>
         <div class="row">
             <div class="col-lg-12">
                 <div class="main-box clearfix">
@@ -51,10 +49,10 @@
                                 <tr>
                                     <th><span>User</span></th>
                                     <th><span>Date created</span></th>
-                                    <th><span>Date modify</span></th>
+                                    <th class="text-center"><span>Date modify</span></th>
                                     <th class="text-center"><span>Name</span></th>
                                     <th><span>Number Objects</span></th>
-                                    <th><span>Actions</span></th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -66,8 +64,8 @@
                                     <td>
                                         [[${drawing.getDateCreated()}]]
                                     </td>
-                                    <td>
-                                        [[${drawing.getDateModify()}]]
+                                    <td class="text-center">
+                                        <span class="label label-default">[[${drawing.getDateModify()}]]</span>
                                     </td>
                                     <td class="text-center">
                                         <span class="label label-default">[[${drawing.getName()}]]</span>
@@ -79,7 +77,7 @@
                                         style="width: 99%; display: flex; flex-direction: row; justify-content: center;">
                                         <form name="viewDrawingForm" action="/viewDrawing" method="get">
                                             <input type="hidden" name="drawingId" th:value=${drawing.getId()} />
-                                            <button type="submit" class="btn btn-primary" style="margin: 10px;">
+                                            <button type="submit" class="btn btn-primary" style="margin: 30px;">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                     fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                                     <path
@@ -95,7 +93,7 @@
                                         <form name="modifyDrawingForm" action="/modifyDrawing" method="get">
                                             <input type="hidden" name="drawingId" th:value=${drawing.getId()} />
 
-                                            <button type="submit" class="btn btn-primary" style="margin: 10px;">
+                                            <button type="submit" class="btn btn-primary" style="margin: 30px;">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                     fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                                     <path
@@ -110,10 +108,27 @@
                                         </form>
 
 
+                                        <form action="/settings" method="get">
+                                            <input type="hidden" name="drawingId" th:value=${drawing.getId()} />
+
+                                            <button type="submit" class="btn btn-primary" style="margin: 30px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z">
+                                                    </path>
+                                                    <path
+                                                        d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z">
+                                                    </path>
+                                                </svg>
+                                            </button>
+                                        </form>
+
+
                                         <form action="/allLists" method="post">
                                             <input type="hidden" name="drawingId" th:value=${drawing.getId()} />
 
-                                            <button type="submit" class="btn btn-outline-danger" style="margin: 10px;">
+                                            <button type="submit" class="btn btn-outline-danger" id="trash" style="margin: 30px;">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                     fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                                                     <path
@@ -138,6 +153,7 @@
             </div>
         </div>
     </div>
+    <script src="/JS/script_allLists.js"></script>
 </body>
 
 </html>

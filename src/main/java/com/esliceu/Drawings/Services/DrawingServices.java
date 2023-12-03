@@ -4,6 +4,7 @@ import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Entities.Version;
 import com.esliceu.Drawings.Repositories.DrawingREPO;
+import com.esliceu.Drawings.Repositories.VersionREPO;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -20,6 +21,9 @@ public class DrawingServices {
 
     @Autowired
     DrawingREPO drawingREPO;
+
+    @Autowired
+    VersionServices versionServices;
 
     // Mètode per desar un dibuix
     public boolean save(String name, User user, String json, boolean view) {
@@ -87,8 +91,9 @@ public class DrawingServices {
 
     // Mètode per obtenir un dibuix pel seu ID
     public Drawing getDrawing(int id) {
-
-        return drawingREPO.getDrawing(id);
+        Drawing drawing = drawingREPO.getDrawing(id);
+        drawing.setVersionList(versionServices.getAllVersionsOfADrawing(drawing));
+        return drawing;
     }
 
     // Mètode per modificar un dibuix ja creat anteriorment

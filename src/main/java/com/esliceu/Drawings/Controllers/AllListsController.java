@@ -3,10 +3,8 @@ package com.esliceu.Drawings.Controllers;
 import com.esliceu.Drawings.DTO.DrawingDTO;
 import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
-import com.esliceu.Drawings.Entities.Version;
 import com.esliceu.Drawings.Services.DrawingDTOServices;
 import com.esliceu.Drawings.Services.DrawingServices;
-import com.esliceu.Drawings.Services.VersionServices;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // Mapeig del servlet per a la pàgina de la meva llista

@@ -46,6 +46,8 @@ public class ViewDrawingController {
 
         // Configurar l'atribut en la sol·licitud amb el JSON del dibuix
         model.addAttribute("json", version.getFigures());
+        model.addAttribute("versionList", drawing.getVersionList());
+
         return "viewDrawing";
     }
 
