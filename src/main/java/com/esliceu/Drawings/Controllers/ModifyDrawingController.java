@@ -92,7 +92,7 @@ public class ModifyDrawingController {
             return "confirmation";
         }
 
-        if (drawingServices.modify(drawingId, json, name, user, drawing)) {
+        if (drawingServices.addDrawingVersion(drawingId, json, name, user, drawing)) {
             model.addAttribute("confirmation", "Your drawing has been modified");
             return "confirmation";
         }

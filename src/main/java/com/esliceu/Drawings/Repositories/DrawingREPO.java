@@ -22,7 +22,9 @@ public interface DrawingREPO {
 
     Drawing getDrawing(int id);
 
-    void modifyFigures(Version version);
+    User getUserById(int idUser);
+
+    void addVersion(Version version);
 
     void changeDrawingName(Drawing drawing, String name);
 

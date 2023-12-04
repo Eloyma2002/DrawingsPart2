@@ -4,7 +4,6 @@ import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Entities.Version;
 import com.esliceu.Drawings.Repositories.DrawingREPO;
-import com.esliceu.Drawings.Repositories.VersionREPO;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -62,6 +61,11 @@ public class DrawingServices {
         // Carrega només els teus dibuixos i els públics s'altres usuaris
         List<Drawing> allDrawings = drawingREPO.loadAllLists(user);
 
+        // Assignam a cada dibuix el seu usuari mitjançant l'id del mateix
+        for (Drawing drawing : allDrawings) {
+            drawing.setUser(drawingREPO.getUserById(drawing.getIdUser()));
+        }
+
         for (Drawing drawing : allDrawings) {
             if (drawing.isTrash() || user.getId() != drawing.getIdUser() && !drawing.isTrash()) {
                 return null;
@@ -92,12 +96,13 @@ public class DrawingServices {
     // Mètode per obtenir un dibuix pel seu ID
     public Drawing getDrawing(int id) {
         Drawing drawing = drawingREPO.getDrawing(id);
+        drawing.setUser(drawingREPO.getUserById(drawing.getIdUser()));
         drawing.setVersionList(versionServices.getAllVersionsOfADrawing(drawing));
         return drawing;
     }
 
     // Mètode per modificar un dibuix ja creat anteriorment
-    public boolean modify(int idDrawing, String figures, String newName, User user, Drawing drawing) {
+    public boolean addDrawingVersion(int idDrawing, String figures, String newName, User user, Drawing drawing) {
         JSONParser parser = new JSONParser();
 
         try {
@@ -105,7 +110,7 @@ public class DrawingServices {
             JSONArray jsonArray = (JSONArray) parser.parse(figures);
             Version version = new Version(0, idDrawing, jsonArray.size(), figures, Timestamp.from(Instant.now()));
             if (Objects.equals(user.getUsername(), drawing.getUser().getUsername())) {
-                drawingREPO.modifyFigures(version);
+                drawingREPO.addVersion(version);
                 return true;
             }
         } catch (Exception e) {

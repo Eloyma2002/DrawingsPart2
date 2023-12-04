@@ -27,7 +27,7 @@
             <a class="nav-link" href="/geoform">Draw</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/myList">My list</a>
+            <a class="nav-link" href="/trash">Trash</a>
           </li>
         </ul>
       </div>
@@ -103,7 +103,7 @@
                     </form>
 
 
-                    <form action="/trash" method="post">
+                    <form action="/trash" method="post" id="trashForm">
                       <input type="hidden" name="drawingId" th:value=${drawing.getId()} />
 
                       <button type="submit" class="btn btn-outline-danger" style="margin: 30px;">
@@ -131,6 +131,7 @@
       </div>
     </div>
   </div>
+  <script src="/src/main/resources/static/JS/script_allLists.js"></script>
 </body>
 
 </html>

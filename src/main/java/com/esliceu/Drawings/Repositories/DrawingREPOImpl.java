@@ -39,31 +39,18 @@ public class DrawingREPOImpl implements DrawingREPO {
         Number key = keyHolder.getKey();
         if (key != null) drawing.setId(key.intValue());
         version.setIdDrawing(drawing.getId());
-        modifyFigures(version);
+        addVersion(version);
     }
 
     @Override
     public List<Drawing> loadAllLists(User user) {
         // Tornar la llista completa de dibuixos
-        List<Drawing> myDrawings = jdbcTemplate.query("SELECT id, name, idUser, view, date, trash " +
+        return jdbcTemplate.query("SELECT id, name, idUser, view, date, trash " +
                                                           "FROM drawing " +
                                                           "WHERE (idUser = ? AND trash = 0) " +
                                                           "OR " +
                                                           "(view = 1 AND trash = 0)",
                                                           new BeanPropertyRowMapper<>(Drawing.class), user.getId());
-
-        // Assignam a cada dibuix el seu usuari mitjançant l'id del mateix
-        for (Drawing drawing : myDrawings) {
-            drawing.setUser(getUserById(drawing.getIdUser()));
-        }
-
-        return myDrawings;
-    }
-
-    private User getUserById(int idUser) {
-        return jdbcTemplate.queryForObject
-                ("SELECT * FROM `user` WHERE `id` = ?",
-                        new BeanPropertyRowMapper<>(User.class), idUser);
     }
 
     @Override
@@ -85,10 +72,12 @@ public class DrawingREPOImpl implements DrawingREPO {
 
     @Override
     public boolean deleteDrawing(Drawing drawing) {
-        // Eliminar un dibuix si coincideix amb la ID i l'id de l'usuari proporcionats
-        drawing.setTrash(true);
+
 
         int rowsUpdated = jdbcTemplate.update("UPDATE drawing SET trash = 1 WHERE id = ?;", drawing.getId());
+
+        // Eliminar un dibuix si coincideix amb la ID i l'id de l'usuari proporcionats
+        drawing.setTrash(true);
 
         // Si rowsUpdated es major que 0, significa que hi ha una filera actualitzada
         return rowsUpdated > 0;
@@ -112,14 +101,19 @@ public class DrawingREPOImpl implements DrawingREPO {
     public Drawing getDrawing(int id) {
         // Buscar i tornar un dibuix per la seva ID
 
-        Drawing drawing = jdbcTemplate.queryForObject("SELECT * FROM drawing WHERE id = ?",
+        return jdbcTemplate.queryForObject("SELECT * FROM drawing WHERE id = ?",
                 new BeanPropertyRowMapper<>(Drawing.class), id);
-        drawing.setUser(getUserById(drawing.getIdUser()));
-        return drawing;
     }
 
     @Override
-    public void modifyFigures(Version version) {
+    public User getUserById(int idUser) {
+            return jdbcTemplate.queryForObject
+                    ("SELECT * FROM `user` WHERE `id` = ?",
+                            new BeanPropertyRowMapper<>(User.class), idUser);
+    }
+
+    @Override
+    public void addVersion(Version version) {
         // Modificar les figures, aficam una nova versió
         jdbcTemplate.update("INSERT INTO `version` (`figures`, `idDrawing`, `dateModify`, `numFigures`) " +
                                 "VALUES (?, ?, ?, ?);",
