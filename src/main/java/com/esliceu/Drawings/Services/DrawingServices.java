@@ -3,6 +3,7 @@ package com.esliceu.Drawings.Services;
 import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Entities.Version;
+import com.esliceu.Drawings.Exceptions.*;
 import com.esliceu.Drawings.Repositories.DrawingREPO;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -25,12 +26,11 @@ public class DrawingServices {
     VersionServices versionServices;
 
     // Mètode per desar un dibuix
-    public boolean save(String name, User user, String json, boolean view) {
+    public boolean save(String name, User user, String json, boolean view) throws DrawingWithoutContentException, ParseException {
         Drawing drawing = new Drawing(name, user, view);
         drawing.setIdUser(user.getId());
         Version version = new Version(0, 0, 0, json, Timestamp.from(Instant.now()));
 
-        try {
             // Assignam si el dibuix es públic o privat
             drawing.setView(view);
 
@@ -38,40 +38,45 @@ public class DrawingServices {
             int numFigures = getNumFigures(json);
             version.setNumFigures(numFigures);
             if (version.getNumFigures() == 0) {
-                return false;
+                throw new DrawingWithoutContentException();
             }
-        } catch (Exception e) {
-            return false;
-        }
 
         // Desar el dibuix a la base de dades
         drawingREPO.save(drawing, user, version);
         return true;
     }
 
-    public int getNumFigures(String json) throws ParseException {
+    public int getNumFigures(String json) throws ParseException, DrawingWithoutContentException{
         JSONParser parser = new JSONParser();
         JSONArray jsonArray = (JSONArray) parser.parse(json);
+        if (jsonArray.size() == 0) {
+            throw new DrawingWithoutContentException();
+        }
         return jsonArray.size();
     }
 
     // Mètode per carregar tots els dibuixos
-    public List<Drawing> loadAll(User user) {
+    public List<Drawing> loadAll(User user) throws ErrorWithListException {
 
-        // Carrega només els teus dibuixos i els públics s'altres usuaris
-        List<Drawing> allDrawings = drawingREPO.loadAllLists(user);
+            // Carrega només els teus dibuixos i els públics s'altres usuaris
+            List<Drawing> allDrawings = drawingREPO.loadAllLists(user);
 
-        // Assignam a cada dibuix el seu usuari mitjançant l'id del mateix
-        for (Drawing drawing : allDrawings) {
-            drawing.setUser(drawingREPO.getUserById(drawing.getIdUser()));
-        }
-
-        for (Drawing drawing : allDrawings) {
-            if (drawing.isTrash() || user.getId() != drawing.getIdUser() && !drawing.isTrash()) {
-                return null;
+            // Assignam a cada dibuix el seu usuari mitjançant l'id del mateix
+            for (Drawing drawing : allDrawings) {
+                drawing.setUser(drawingREPO.getUserById(drawing.getIdUser()));
             }
-        }
-        return allDrawings;
+
+            for (Drawing drawing : allDrawings) {
+                if (drawing.isTrash() || user.getId() != drawing.getIdUser() && !drawing.isTrash()) {
+                    throw new ErrorWithListException();
+                }
+            }
+
+            if (allDrawings == null) {
+                // Gestionar l'excepció per si hi ha un dibuix que no hi hauria d'estar a aquesta llista
+                throw new ErrorWithListException();
+            }
+            return allDrawings;
     }
 
     // Mètode per carregar la llista de dibuixos d'un usuari específic
@@ -80,10 +85,10 @@ public class DrawingServices {
     }
 
     // Mètode per assignar un dibuix a la paperera
-    public boolean delete(Drawing drawing, User user) {
+    public boolean delete(Drawing drawing, User user) throws YouCantDeleteThisDrawingException {
 
         if (drawing.getIdUser() != user.getId()) {
-            return false;
+            throw new YouCantDeleteThisDrawingException();
         }
 
         return drawingREPO.deleteDrawing(drawing);
@@ -124,7 +129,7 @@ public class DrawingServices {
     }
 
     // Recupera el dibuix de la paperera
-    public boolean recoverDrawingFromTrash(int drawingId, User user) {
+    public boolean recoverDrawingFromTrash(int drawingId, User user) throws YouCantRecoverThisDrawingException {
 
         // Obté el dibuix mitjançant l'id
         Drawing drawing = drawingREPO.getDrawing(drawingId);
@@ -134,6 +139,34 @@ public class DrawingServices {
             return drawingREPO.recoverDrawingFromTrash(drawingId);
         }
 
+        throw new YouCantRecoverThisDrawingException();
+    }
+
+    public boolean confirmViewType(String viewType) throws NonCorrectViewTypeException {
+
+        if (viewType.equals("1")) {
+            return true;
+        } else if (viewType.equals("0")) {
+            return false;
+        } else {
+            throw new NonCorrectViewTypeException();
+        }
+    }
+
+    public void confirmIfDrawingIsPublic(Drawing drawing, User user) throws YouCantAccessToThisDrawingException{
+        if (!drawing.getView() && drawing.getIdUser() != user.getId()) {
+            throw new YouCantAccessToThisDrawingException();
+        }
+    }
+
+    public boolean confirmDrawingChanges(Version version, Drawing drawing, String json, String name) {
+
+        if (version.getFigures().equals(json) && drawing.getName().equals(name)) {
+            throw new DrawingWithoutChangesException();
+        } else if (version.getFigures().equals(json) && !Objects.equals(drawing.getName(), name)) {
+            changeDrawingName(drawing, name);
+            return true;
+        }
         return false;
     }
 }

@@ -3,6 +3,9 @@ package com.esliceu.Drawings.Repositories;
 import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Entities.Version;
+import com.esliceu.Drawings.Exceptions.ErrorWithListException;
+import com.esliceu.Drawings.Exceptions.ErrorWithTrashListException;
+import com.esliceu.Drawings.Exceptions.YouCantDeleteThisDrawingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -84,7 +87,7 @@ public class DrawingREPOImpl implements DrawingREPO {
     }
 
     @Override
-    public boolean deleteTrash(Drawing drawing) {
+    public boolean deleteTrash(Drawing drawing) throws YouCantDeleteThisDrawingException {
         // Eliminar un dibuix de la paperera si coincideix amb la ID i l'id de l'usuari proporcionats
 
         int versionDeleted = jdbcTemplate.update("DELETE FROM version WHERE idDrawing = ?",
@@ -94,7 +97,11 @@ public class DrawingREPOImpl implements DrawingREPO {
                                                       drawing.getId(), drawing.getIdUser());
 
         // Si drawingDeletes es major que 0, significa que hi ha una filera eliminada, el mateix passa amb versionDeleted
-        return drawingDeleted > 0 && versionDeleted > 0;
+        if (drawingDeleted > 0 && versionDeleted > 0) {
+            throw new YouCantDeleteThisDrawingException();
+        }
+
+        return true;
     }
 
     @Override

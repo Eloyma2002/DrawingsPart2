@@ -1,8 +1,8 @@
 package com.esliceu.Drawings.Repositories;
 
 import com.esliceu.Drawings.Entities.User;
-import com.esliceu.Drawings.Exceptions.UserDoesntExist;
-import com.esliceu.Drawings.Exceptions.UserExist;
+import com.esliceu.Drawings.Exceptions.UserDoesntExistException;
+import com.esliceu.Drawings.Exceptions.UserExistException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,7 +14,7 @@ public class UserREPOImpl implements UserREPO {
     JdbcTemplate jdbcTemplate;
 
     @Override
-    public void saveUser(User user) throws UserExist {
+    public void saveUser(User user) throws UserExistException {
 
         // Verificar si el usuario ya existe en la base de datos
         int count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM `user` WHERE `username` = ?",
@@ -22,7 +22,7 @@ public class UserREPOImpl implements UserREPO {
 
         // Si el conteo es mayor que 0, significa que ya hay un usuario con ese nombre de usuario
         if (count > 0) {
-            throw new UserExist();
+            throw new UserExistException();
         }
 
         // Si no hay usuarios con ese nombre de usuario, proceder con la inserción
@@ -32,7 +32,7 @@ public class UserREPOImpl implements UserREPO {
 
 
     @Override
-    public User getUser(String username, String password) throws UserDoesntExist {
+    public User getUser(String username, String password) throws UserDoesntExistException {
 
         User user = jdbcTemplate.queryForObject
                     ("SELECT * FROM `user` WHERE `username` = ? AND `password` = ?;",

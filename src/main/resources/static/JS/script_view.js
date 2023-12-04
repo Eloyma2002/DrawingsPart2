@@ -12,6 +12,7 @@ document.getElementById('versionSelect').addEventListener('change', function () 
     // Obtener el valor seleccionado
     var selectedValue = this.value;
 
+    jsonString.value = this.value;
     context.clearRect(0, 0, canvas.width, canvas.height);
     var jsonObjectVersion = JSON.parse(selectedValue);
     cargaFiguras(jsonObjectVersion);

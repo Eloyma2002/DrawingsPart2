@@ -1,8 +1,10 @@
 package com.esliceu.Drawings.Controllers;
 
+import com.esliceu.Drawings.DTO.DrawingDTO;
 import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Entities.Version;
+import com.esliceu.Drawings.Services.DrawingDTOServices;
 import com.esliceu.Drawings.Services.DrawingServices;
 import com.esliceu.Drawings.Services.VersionServices;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,6 +32,10 @@ public class ModifyDrawingController {
     // Servei per gestionar les versions
     VersionServices versionServices;
 
+    @Autowired
+    // Servei per gestionar els dibuixosDTO
+    DrawingDTOServices drawingDTOServices;
+
     @GetMapping("/modifyDrawing")
     public String getModifyDrawing(Model model, HttpServletRequest req, @RequestParam int drawingId) {
         // Obtindre l'ID del dibuix a visualitzar des del formulari
@@ -37,30 +43,20 @@ public class ModifyDrawingController {
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
 
-        // Obtindre el dibuix des del servei de dibuixos
-        Drawing drawing = drawingServices.getDrawing(drawingId);
+        try {
+            DrawingDTO drawingDTO = drawingDTOServices.getDTODrawing(drawingId, user);
 
-        // Obtenir la versió més recient del dibuix
-        Version version = versionServices.getLastVersion(drawingId);
+            // Configurar atributs en la sol·licitud per a la pàgina HTML
+            model.addAttribute("json", drawingDTO.getFigures());
+            model.addAttribute("drawingId", drawingDTO.getId());
+            model.addAttribute("name", drawingDTO.getName());
+            model.addAttribute("viewType", drawingDTO.isVisualization());
 
-        // Si intenten modificar el dibuix desde la paperera no es podrà fer
-        if (drawing.isTrash()) {
-            model.addAttribute("error", "You cannot modify a drawing that is in the trash");
+            return "modifyDrawing";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
             return "error";
         }
-
-        // Comprovar si el dibuix es del mateix usuari que l'intenta modificar
-        if (!Objects.equals(user.getUsername(), drawing.getUser().getUsername())) {
-                model.addAttribute("error", "You cannot modify a drawing that is not yours");
-                return "error";
-        }
-
-        // Configurar atributs en la sol·licitud per a la pàgina HTML
-        model.addAttribute("json", version.getFigures());
-        model.addAttribute("drawingId", drawing.getId());
-        model.addAttribute("name", drawing.getName());
-        model.addAttribute("viewType", drawing.isView());
-        return "modifyDrawing";
     }
 
     @PostMapping("/modifyDrawing")
@@ -68,34 +64,33 @@ public class ModifyDrawingController {
                                     @RequestParam int drawingId, @RequestParam String name,
                                     @RequestParam String json) throws ParseException {
 
-        // Obtenir l'usuari actual des de la sessió
-        HttpSession session = req.getSession();
-        User user = (User) session.getAttribute("user");
+        try {
 
-        // Obtenir el dibuix mitjançant l'id
-        Drawing drawing = drawingServices.getDrawing(drawingId);
+            // Obtenir l'usuari actual des de la sessió
+            HttpSession session = req.getSession();
+            User user = (User) session.getAttribute("user");
 
-        // Obtenir l'ultima versió del dibuix
-        Version version = versionServices.getLastVersion(drawingId);
+            // Obtenir el dibuix mitjançant l'id
+            Drawing drawing = drawingServices.getDrawing(drawingId);
 
-        if (drawingServices.getNumFigures(json) == 0) {
-            model.addAttribute("error", "You cannot save a drawing without content");
-            return "error";
+            // Obtenir l'ultima versió del dibuix
+            Version version = versionServices.getLastVersion(drawingId);
+
+            drawingServices.getNumFigures(json);
+
+            if (drawingServices.confirmDrawingChanges(version, drawing, json, name)){
+                model.addAttribute("confirmation", "The drawing name has been changed");
+                return "confirmation";
+            }
+
+            if (drawingServices.addDrawingVersion(drawingId, json, name, user, drawing)) {
+                model.addAttribute("confirmation", "Your drawing has been modified");
+                return "confirmation";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
         }
 
-        if (version.getFigures().equals(json) && drawing.getName().equals(name)) {
-            model.addAttribute("error", "You cannot modify a drawing without changes");
-            return "error";
-        } else if (version.getFigures().equals(json) && !Objects.equals(drawing.getName(), name)) {
-            drawingServices.changeDrawingName(drawing, name);
-            model.addAttribute("confirmation", "The drawing name has been changed");
-            return "confirmation";
-        }
-
-        if (drawingServices.addDrawingVersion(drawingId, json, name, user, drawing)) {
-            model.addAttribute("confirmation", "Your drawing has been modified");
-            return "confirmation";
-        }
         return "modifyDrawing";
     }
 }

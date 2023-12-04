@@ -31,22 +31,24 @@ public class ViewDrawingController {
     public String getViewDrawing(Model model, HttpServletRequest req, @RequestParam int drawingId) {
         // Obtindre l'ID del dibuix a visualitzar des del formulari
 
-        // Obtenir l'usuari de la sessió actual
-        HttpSession session = req.getSession();
-        User user = (User) session.getAttribute("user");
+        try {
+            // Obtenir l'usuari de la sessió actual
+            HttpSession session = req.getSession();
+            User user = (User) session.getAttribute("user");
 
-        // Obtindre el dibuix des del servei de dibuixos
-        Drawing drawing = drawingServices.getDrawing(drawingId);
-        Version version = versionServices.getLastVersion(drawingId);
+            // Obtindre el dibuix des del servei de dibuixos
+            Drawing drawing = drawingServices.getDrawing(drawingId);
+            Version version = versionServices.getLastVersion(drawingId);
 
-        if (!drawing.getView() && drawing.getIdUser() != user.getId()) {
-            model.addAttribute("error", "The owner of this drawing has set it to private");
-            return "error";
+            drawingServices.confirmIfDrawingIsPublic(drawing, user);
+
+            // Configurar l'atribut en la sol·licitud amb el JSON del dibuix
+            model.addAttribute("json", version.getFigures());
+            model.addAttribute("versionList", drawing.getVersionList());
+
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
         }
-
-        // Configurar l'atribut en la sol·licitud amb el JSON del dibuix
-        model.addAttribute("json", version.getFigures());
-        model.addAttribute("versionList", drawing.getVersionList());
 
         return "viewDrawing";
     }

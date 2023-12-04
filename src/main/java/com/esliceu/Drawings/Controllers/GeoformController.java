@@ -32,28 +32,31 @@ public class GeoformController {
     public String postGeoform(Model model, @RequestParam String json, @RequestParam String name, HttpServletRequest req,
                               @RequestParam String viewType){
 
-        boolean view;
-        if (viewType.equals("1")) {
-            view = true;
-        } else if (viewType.equals("0")) {
-            view = false;
-        } else {
-            model.addAttribute("error", "Error assigning display type");
-            return "error";
-        }
-
         // Obtenir l'usuari de la sessió actual
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
 
-        // Guardar el dibuix a la base de dades
-        if (drawingServices.save(name, user, json, view)) {
-            model.addAttribute("confirmation", "Your drawing is saved");
-            return "confirmation";
-        } else {
-            model.addAttribute("error", "You cannot save a drawing without content");
+        // Confirmar si el dibuix es públic o privat
+        boolean view = false;
+        try {
+            view = drawingServices.confirmViewType(viewType);
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+        }
+
+        try {
+            // Guardar el dibuix a la base de dades
+            if (drawingServices.save(name, user, json, view)) {
+                model.addAttribute("confirmation", "Your drawing is saved");
+                return "confirmation";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
             return "error";
         }
+
+        model.addAttribute("error", "Error saving your drawing");
+        return "error";
     }
 
     @GetMapping("/geoform")

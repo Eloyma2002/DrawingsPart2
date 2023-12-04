@@ -49,16 +49,19 @@ public class TrashController {
     @PostMapping("/trash")
     public String postMyList(Model model, @RequestParam int drawingId, HttpServletRequest req) {
         // Obté l'ID del dibuix a eliminar des del formulari
-
-        if (drawingServices.deleteTrash(drawingId)) {
-            // Indiquem que l'usuari ha esborrat correctament el dibuix
-            model.addAttribute("confirmation", "Your drawing is deleted");
-            return "confirmation";
+        try {
+            if (drawingServices.deleteTrash(drawingId)) {
+                // Indiquem que l'usuari ha esborrat correctament el dibuix
+                model.addAttribute("confirmation", "Your drawing is deleted");
+                return "confirmation";
+            }
+        } catch (Exception e) {
+            // Gestionar l'excepció per a un dibuix no existent configurant un atribut d'error i redirigint a la pàgina de registre
+            model.addAttribute("error", e.getMessage());
+            return "error";
         }
 
-        // Gestionar l'excepció per a un dibuix no existent configurant un atribut d'error i redirigint a la pàgina de registre
-        model.addAttribute("error", "You cant delete this drawing, is not yours");
-        return "error";
+        return null;
     }
 }
 

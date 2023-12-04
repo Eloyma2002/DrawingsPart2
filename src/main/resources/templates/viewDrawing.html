@@ -52,7 +52,11 @@
     
 </div>
 
-<input type="hidden" id="json" name="json" th:value=${json} readonly>
+<form action="/viewDrawing" method="post">
+    <button type="submit">Copy</button>
+    <input type="hidden" id="json" name="json" th:value=${json} readonly>
+    <input type="hidden" id="name" name="name" >
+</form>
 
 
 <script src="/JS/script_view.js"></script>

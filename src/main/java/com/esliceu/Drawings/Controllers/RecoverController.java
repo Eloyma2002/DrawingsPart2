@@ -41,14 +41,19 @@ public class RecoverController {
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
 
-        if (drawingServices.recoverDrawingFromTrash(drawingId, user)) {
-            // Indiquem que l'usuari ha esborrat correctament el dibuix
-            model.addAttribute("confirmation", "Your drawing has been recovered");
-            return "confirmation";
+        try {
+            if (drawingServices.recoverDrawingFromTrash(drawingId, user)) {
+                // Indiquem que l'usuari ha esborrat correctament el dibuix
+                model.addAttribute("confirmation", "Your drawing has been recovered");
+                return "confirmation";
+            }
+        } catch (Exception e) {
+            // Gestionar l'excepció per a un dibuix no existent configurant un atribut d'error i redirigint a la pàgina de registre
+            model.addAttribute("error", e.getMessage());
+            return "error";
         }
 
-        // Gestionar l'excepció per a un dibuix no existent configurant un atribut d'error i redirigint a la pàgina de registre
-        model.addAttribute("error", "You cant recover this drawing, is not yours");
+        model.addAttribute("error", "Error recovering the drawing");
         return "error";
     }
 }
