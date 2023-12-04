@@ -50,7 +50,10 @@ public class TrashController {
     public String postMyList(Model model, @RequestParam int drawingId, HttpServletRequest req) {
         // Obté l'ID del dibuix a eliminar des del formulari
         try {
-            if (drawingServices.deleteTrash(drawingId)) {
+            HttpSession session = req.getSession();
+            User user = (User) session.getAttribute("user");
+
+            if (drawingServices.deleteTrash(drawingId, user)) {
                 // Indiquem que l'usuari ha esborrat correctament el dibuix
                 model.addAttribute("confirmation", "Your drawing is deleted");
                 return "confirmation";

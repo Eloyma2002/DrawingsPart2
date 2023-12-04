@@ -97,7 +97,7 @@ public class DrawingREPOImpl implements DrawingREPO {
                                                       drawing.getId(), drawing.getIdUser());
 
         // Si drawingDeletes es major que 0, significa que hi ha una filera eliminada, el mateix passa amb versionDeleted
-        if (drawingDeleted > 0 && versionDeleted > 0) {
+        if (drawingDeleted == 0 && versionDeleted == 0) {
             throw new YouCantDeleteThisDrawingException();
         }
 

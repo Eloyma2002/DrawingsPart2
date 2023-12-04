@@ -3,6 +3,7 @@ package com.esliceu.Drawings.Controllers;
 
 import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Exceptions.UserDoesntExistException;
+import com.esliceu.Drawings.Exceptions.UserExistException;
 import com.esliceu.Drawings.Services.UserServices;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,15 +28,17 @@ public class LoginController {
 
     // Gestionar les sol·licituds POST en enviar el formulari de registre
     @PostMapping("/login")
-    public String postLogin(Model model, @RequestParam String username, @RequestParam String password, HttpServletRequest req) throws IOException {
+    public String postLogin(Model model, @RequestParam String username, @RequestParam String password, HttpServletRequest req)
+            throws UserExistException {
 
         try {
             // Intentar realitzar l'inici de sessió i obtenir l'objecte User corresponent
-            userServices.login(username, password, req);
+            User user = userServices.login(username, password);
+            userServices.setUserToSession(user, req);
             return "redirect:/geoform";
         } catch (Exception e) {
             // Manejar la excepció d'usuari no trobat configurant un missatge d'error i redirigint a la pàgina d'inici de sessió
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute("error", "User not found");
         }
         return "login";
     }

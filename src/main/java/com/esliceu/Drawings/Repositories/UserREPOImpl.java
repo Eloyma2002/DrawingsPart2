@@ -38,6 +38,10 @@ public class UserREPOImpl implements UserREPO {
                     ("SELECT * FROM `user` WHERE `username` = ? AND `password` = ?;",
                             new BeanPropertyRowMapper<>(User.class), username, password);
 
+        if (user == null) {
+            throw new UserDoesntExistException();
+        }
+
         return user;
     }
 }

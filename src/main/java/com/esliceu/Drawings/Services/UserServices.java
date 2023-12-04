@@ -30,26 +30,15 @@ public class UserServices {
         userREPO.saveUser(user);
     }
 
-    public User login(String userName, String password, HttpServletRequest req) throws UserDoesntExistException,
+    public User login(String userName, String password) throws UserDoesntExistException,
                                                                                        PasswordNotValidException {
 
-        // Autenticar l'usuari
-        if (password.length() < 5) {
-            throw new PasswordNotValidException();
-        }
+        // Autenticar la contrasenya
+        confirmPassword(password);
+
         String hash = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
 
-        User user = userREPO.getUser(userName, hash);
-
-        // Si l'usuari existeix, crear una sessió i redirigir a la pàgina de geoform
-        if (user != null) {
-            HttpSession session = req.getSession();
-            session.setAttribute("user", user);
-        } else {
-            throw new UserDoesntExistException();
-        }
-
-        return user;
+        return userREPO.getUser(userName, hash);
     }
 
     public void confirmPassword(String password) {
@@ -60,8 +49,18 @@ public class UserServices {
 
         // Verificar si la contrasenya és vàlida; si no ho és, llançar una excepció
         if (!matcher.matches()) {
-            // Gestionar l'excepció configurant un atribut d'error i redirigint a la pàgina de registre
+            // Gestionar l'excepció configurant un atribut d'error
             throw new PasswordNotValidException();
+        }
+    }
+
+    public void setUserToSession(User user, HttpServletRequest req) throws UserDoesntExistException{
+        // Si l'usuari existeix, crear una sessió i redirigir a la pàgina de geoform
+        if (user != null) {
+            HttpSession session = req.getSession();
+            session.setAttribute("user", user);
+        } else {
+            throw new UserDoesntExistException();
         }
     }
 }

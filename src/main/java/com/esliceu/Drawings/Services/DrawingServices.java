@@ -124,7 +124,12 @@ public class DrawingServices {
         return false;
     }
 
-    public boolean deleteTrash(int drawingId) {
+    public boolean deleteTrash(int drawingId, User user) throws YouCantDeleteThisDrawingException {
+        Drawing drawing = getDrawing(drawingId);
+        if (drawing.getIdUser() != user.getId()) {
+            throw new YouCantDeleteThisDrawingException();
+        }
+
         return drawingREPO.deleteTrash(getDrawing(drawingId));
     }
 
@@ -138,7 +143,6 @@ public class DrawingServices {
         if (drawing.getIdUser() == user.getId()) {
             return drawingREPO.recoverDrawingFromTrash(drawingId);
         }
-
         throw new YouCantRecoverThisDrawingException();
     }
 
@@ -154,7 +158,7 @@ public class DrawingServices {
     }
 
     public void confirmIfDrawingIsPublic(Drawing drawing, User user) throws YouCantAccessToThisDrawingException{
-        if (!drawing.getView() && drawing.getIdUser() != user.getId()) {
+        if (!drawing.isView() && drawing.getIdUser() != user.getId()) {
             throw new YouCantAccessToThisDrawingException();
         }
     }

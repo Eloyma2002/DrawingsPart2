@@ -48,6 +48,7 @@ public class ViewDrawingController {
 
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
+            return "error";
         }
 
         return "viewDrawing";
