@@ -48,6 +48,7 @@ public class AllListsController {
             drawingDTOS = drawingDTOServices.transformListDrawingToDrawingDTO(allDrawings);
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
+            return "error";
         }
 
         // Configurar l'atribut a la sol·licitud amb la llista de tots els dibuixos

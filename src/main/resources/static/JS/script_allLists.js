@@ -1,4 +1,4 @@
-const trashForm  = document.querySelector("#trashForm");
+const trashForm  = document.querySelector(".trashForm");
 
 trashForm.addEventListener("submit" , function(event) {
     event.preventDefault();
