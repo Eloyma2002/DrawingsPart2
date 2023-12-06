@@ -1,6 +1,7 @@
 package com.esliceu.Drawings.Services;
 
 import com.esliceu.Drawings.Entities.Drawing;
+import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Entities.Version;
 import com.esliceu.Drawings.Repositories.VersionREPO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,4 +29,8 @@ public class VersionServices {
         return versionREPO.getAllVersion(drawing.getId());
     }
 
+    public Version getVersionById(User user, int versionId) {
+
+        return versionREPO.getVersionById(user, versionId);
+    }
 }

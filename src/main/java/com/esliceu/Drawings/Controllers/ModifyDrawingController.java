@@ -61,20 +61,22 @@ public class ModifyDrawingController {
 
     @PostMapping("/modifyDrawing")
     public String postModifyDrawing(Model model, HttpServletRequest req,
-                                    @RequestParam int drawingId, @RequestParam String name,
-                                    @RequestParam String json) throws ParseException {
+                                    @RequestParam String drawingId, @RequestParam String name,
+                                    @RequestParam String json) {
 
         try {
+
+            int id = Integer.parseInt(drawingId);
 
             // Obtenir l'usuari actual des de la sessió
             HttpSession session = req.getSession();
             User user = (User) session.getAttribute("user");
 
             // Obtenir el dibuix mitjançant l'id
-            Drawing drawing = drawingServices.getDrawing(drawingId);
+            Drawing drawing = drawingServices.getDrawing(id);
 
             // Obtenir l'ultima versió del dibuix
-            Version version = versionServices.getLastVersion(drawingId);
+            Version version = versionServices.getLastVersion(id);
 
             drawingServices.getNumFigures(json);
 
@@ -83,7 +85,7 @@ public class ModifyDrawingController {
                 return "confirmation";
             }
 
-            if (drawingServices.addDrawingVersion(drawingId, json, name, user, drawing)) {
+            if (drawingServices.addDrawingVersion(id, json, user, drawing)) {
                 model.addAttribute("confirmation", "Your drawing has been modified");
                 return "confirmation";
             }

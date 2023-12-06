@@ -1,6 +1,5 @@
 package com.esliceu.Drawings.Repositories;
 
-import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Entities.Version;
 import org.springframework.stereotype.Repository;
@@ -14,4 +13,5 @@ public interface VersionREPO {
 
     List<Version> getAllVersion(int id);
 
+    Version getVersionById(User user, int versionId);
 }

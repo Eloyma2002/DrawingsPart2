@@ -1,17 +1,29 @@
 // Selecciona el canvas y su contexto
 const canvas = document.querySelector('#canvas');
 const context = canvas.getContext('2d');
+const versionId = document.querySelector("#versionId");
+const versionSelected = document.getElementById("versionSelect");
 
 // Obtiene la cadena JSON del elemento con id 'JSON' y la parsea
 const jsonString = document.querySelector('#json').value;
 const jsonObject = JSON.parse(jsonString);
 cargaFiguras(jsonObject);
 
+var selectedOption = versionSelected.options[versionSelected.selectedIndex];
+
+versionId.value = selectedOption.id;
+
+
 // Agregar un controlador de eventos para el cambio en el select
-document.getElementById('versionSelect').addEventListener('change', function () {
+versionSelected.addEventListener('change', function () {
+    
     // Obtener el valor seleccionado
     var selectedValue = this.value;
 
+    selectedOption = versionSelected.options[versionSelected.selectedIndex];
+
+    versionId.value = selectedOption.id;
+    
     jsonString.value = this.value;
     context.clearRect(0, 0, canvas.width, canvas.height);
     var jsonObjectVersion = JSON.parse(selectedValue);

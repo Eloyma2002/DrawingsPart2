@@ -72,11 +72,7 @@ public class DrawingServices {
                 }
             }
 
-            if (allDrawings == null) {
-                // Gestionar l'excepció per si hi ha un dibuix que no hi hauria d'estar a aquesta llista
-                throw new ErrorWithListException();
-            }
-            return allDrawings;
+        return allDrawings;
     }
 
     // Mètode per carregar la llista de dibuixos d'un usuari específic
@@ -107,7 +103,7 @@ public class DrawingServices {
     }
 
     // Mètode per modificar un dibuix ja creat anteriorment
-    public boolean addDrawingVersion(int idDrawing, String figures, String newName, User user, Drawing drawing) {
+    public boolean addDrawingVersion(int idDrawing, String figures, User user, Drawing drawing) {
         JSONParser parser = new JSONParser();
 
         try {
@@ -157,10 +153,11 @@ public class DrawingServices {
         }
     }
 
-    public void confirmIfDrawingIsPublic(Drawing drawing, User user) throws YouCantAccessToThisDrawingException{
+    public boolean confirmIfDrawingIsPublic(Drawing drawing, User user) throws YouCantAccessToThisDrawingException{
         if (!drawing.isView() && drawing.getIdUser() != user.getId()) {
             throw new YouCantAccessToThisDrawingException();
         }
+        return true;
     }
 
     public boolean confirmDrawingChanges(Version version, Drawing drawing, String json, String name) {
@@ -172,5 +169,22 @@ public class DrawingServices {
             return true;
         }
         return false;
+    }
+
+    public void copyDrawing(Version version, User user, String name) {
+
+        try {
+            Drawing drawing = getDrawing(version.getIdDrawing());
+
+            if (confirmIfDrawingIsPublic(drawing, user) && !drawing.isTrash()) {
+                // Assignam el dibuix com a privat com indica l'enunciat
+                Drawing drawingCopy = new Drawing(name, user, false);
+                drawingCopy.setIdUser(user.getId());
+
+                // Desar el dibuix a la base de dades
+                drawingREPO.save(drawingCopy, user, version);
+            }
+        } catch (Exception ignored) {
+        }
     }
 }
