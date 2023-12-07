@@ -6,4 +6,4 @@ trashForm.addEventListener("submit" , function(event) {
         return;
     };
     trashForm.submit();
-})
+});
