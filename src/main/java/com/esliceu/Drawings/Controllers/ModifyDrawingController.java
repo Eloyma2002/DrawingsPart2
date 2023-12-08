@@ -10,6 +10,7 @@ import com.esliceu.Drawings.Services.VersionServices;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,10 +59,10 @@ public class ModifyDrawingController {
     }
 
     @PostMapping("/modifyDrawing")
-    public String postModifyDrawing(Model model, HttpServletRequest req,
-                                    @RequestParam String drawingId, @RequestParam String name,
-                                    @RequestParam String json,
-                                    @RequestParam String viewType) {
+    public ResponseEntity<String> modifyDrawing(Model model, HttpServletRequest req,
+                                          @RequestParam String drawingId, @RequestParam String name,
+                                          @RequestParam String json,
+                                          @RequestParam String viewType) {
 
 
         try {
@@ -96,3 +97,34 @@ public class ModifyDrawingController {
         return "modifyDrawing";
     }
 }
+
+
+
+
+
+
+
+    @PostMapping("/geoform")
+    public ResponseEntity<String> geoform(HttpServletRequest req, @RequestBody GeoformRequestDTO geoformRequestDTO) {
+
+        HttpSession session = req.getSession();
+        User u = (User) session.getAttribute("user");
+        String username = u.getUsername();
+
+        boolean isVisible = geoformRequestDTO.getVisibility() == 1;
+        Drawing d = new Drawing(geoformRequestDTO.getName(), geoformRequestDTO.getJsonContainer(), username, isVisible);
+
+        System.out.println(d.getCompleteDrawing());
+        if (geoformService.saveDrawing(d)) {
+            Drawing lastDrawing = geoformService.findLastDrawingByUser(d.getUser_username());
+            lastDrawing.setCompleteDrawing(geoformRequestDTO.getJsonContainer());
+            geoformService.saveVersion(lastDrawing);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header("Location", "/geoform")
+                    .body("Drawing saved");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .header("Location", "/geoform")
+                    .body("Error: Bad request. \n Try again");
+        }
+    }
