@@ -1,9 +1,10 @@
-const trashForm  = document.querySelector(".trashForm");
+const trashForms = document.querySelectorAll(".trashForm");
 
-trashForm.addEventListener("submit" , function(event) {
-    event.preventDefault();
-    if (!confirm("Clicka en Aceptar o Cancelar")) {
-        return;
-    };
-    trashForm.submit();
+trashForms.forEach((form) => {
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        if (confirm("Do you want delete yhos drawing?")) {
+            form.submit();
+        }
+    });
 });

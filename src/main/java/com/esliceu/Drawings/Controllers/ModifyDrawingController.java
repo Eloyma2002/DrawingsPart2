@@ -9,7 +9,6 @@ import com.esliceu.Drawings.Services.DrawingServices;
 import com.esliceu.Drawings.Services.VersionServices;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Objects;
 
 
 // Mapeig del servlet per a la pàgina de la meva llista
@@ -62,7 +60,9 @@ public class ModifyDrawingController {
     @PostMapping("/modifyDrawing")
     public String postModifyDrawing(Model model, HttpServletRequest req,
                                     @RequestParam String drawingId, @RequestParam String name,
-                                    @RequestParam String json) {
+                                    @RequestParam String json,
+                                    @RequestParam String viewType) {
+
 
         try {
 
@@ -96,4 +96,3 @@ public class ModifyDrawingController {
         return "modifyDrawing";
     }
 }
-

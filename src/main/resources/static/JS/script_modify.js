@@ -13,23 +13,35 @@ const buttonSend = document.querySelector('#send');
 const inputJSON = document.querySelector('#json');
 const list = document.querySelector('#list');
 const buttonDraw = document.querySelector('#draw');
+const publicRadio = document.querySelector("#public");
+const privateRadio = document.querySelector("#private");
+const viewType = document.querySelector('#viewType');
+
+// Recupera los valores del localStorage
+const storedColor = localStorage.getItem("color");
+const storedChecked = localStorage.getItem("checked");
+const storedSize = localStorage.getItem("size");
+const storedFigureSelected = localStorage.getItem("figureSelected");
 
 // Obtiene la cadena JSON del elemento con id 'JSON' y la parsea
 const jsonString = document.querySelector('#json').value;
-console.log(jsonString);
 const jsonObject = JSON.parse(jsonString);
 
-// Variables 
-let figureSelected = select.value;
-let color = colorInput.value;
-let checked = checkbox.checked;
-let size = rangeInput.value;
+// Inicializa las variables con los valores almacenados o valores predeterminados
+let color = storedColor || colorInput.value;
+let checked = storedChecked !== null ? JSON.parse(storedChecked) : checkbox.checked;
+let size = storedSize || rangeInput.value;
+let figureSelected = storedFigureSelected || select.value;
+
+// Variables
 let x, y;
 let cont = 0;
 let content = [];
 let lineContent = [];
 let isMouseDrawing = false;
 let isDrawingEnabled = false;
+let isModifyMode = false;
+let idModifyFigure = -1;
 
 // Configura el tamaño del canvas
 canvas.width = 400;
@@ -43,7 +55,11 @@ loadFigures(jsonObject);
 
 // Evento: cambio en la selección de figura
 select.addEventListener("change", function () {
+    if (isModifyMode) {
+        updateElementProperties();
+    }
     figureSelected = select.value;
+    localStorage.setItem("figureSelected", figureSelected);
 });
 
 // Evento: clic en el botón 'Send'
@@ -53,17 +69,29 @@ buttonSend.addEventListener("click", function () {
 
 // Evento: cambio en el color
 colorInput.addEventListener("input", function () {
+    if (isModifyMode) {
+        updateElementProperties();
+    }
     color = colorInput.value;
+    localStorage.setItem("color", color);
 });
 
 // Evento: cambio en la opción de rellenar
 checkbox.addEventListener("change", function () {
+    if (isModifyMode) {
+        updateElementProperties();
+    }
     checked = checkbox.checked;
+    localStorage.setItem("checked", checked);
 });
 
 // Evento: cambio en el tamaño
 rangeInput.addEventListener("input", function () {
+    if (isModifyMode) {
+        updateElementProperties();
+    }
     size = rangeInput.value;
+    localStorage.setItem("size", size);
 });
 
 // Evento: clic en el canvas
@@ -87,6 +115,14 @@ buttonDraw.addEventListener('click', function () {
     isDrawingEnabled = !isDrawingEnabled;
     buttonDraw.style.backgroundColor = isDrawingEnabled ? 'green' : 'red';
 });
+
+document.addEventListener("click", function () {
+    if (publicRadio.checked) {
+        viewType.value = "1";
+    } else {
+        viewType.value = "0";
+    }
+})
 
 // Evento: mousedown en el canvas (dibujo de líneas)
 canvas.addEventListener("mousedown", (event) => {
