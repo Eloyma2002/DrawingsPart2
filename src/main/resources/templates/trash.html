@@ -103,7 +103,7 @@
                     </form>
 
 
-                    <form action="/trash" method="post" id="trashForm">
+                    <form action="/trash" method="post" class="trashForm">
                       <input type="hidden" name="drawingId" th:value=${drawing.getId()} />
 
                       <button type="submit" class="btn btn-outline-danger" style="margin: 30px;">
@@ -122,11 +122,9 @@
                   </td>
                 </tr>
                 </th:each>
-
               </tbody>
             </table>
           </div>
-
         </div>
       </div>
     </div>

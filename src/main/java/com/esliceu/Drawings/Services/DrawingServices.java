@@ -31,15 +31,15 @@ public class DrawingServices {
         drawing.setIdUser(user.getId());
         Version version = new Version(0, 0, 0, json, Timestamp.from(Instant.now()));
 
-            // Assignam si el dibuix es públic o privat
-            drawing.setView(view);
+        // Assignam si el dibuix es públic o privat
+        drawing.setView(view);
 
-            // Intentar parsejar el JSON i obtenir el nombre de figures
-            int numFigures = getNumFigures(json);
-            version.setNumFigures(numFigures);
-            if (version.getNumFigures() == 0) {
-                throw new DrawingWithoutContentException();
-            }
+        // Intentar parsejar el JSON i obtenir el nombre de figures
+        int numFigures = getNumFigures(json);
+        version.setNumFigures(numFigures);
+        if (version.getNumFigures() == 0) {
+            throw new DrawingWithoutContentException();
+        }
 
         // Desar el dibuix a la base de dades
         drawingREPO.save(drawing, user, version);
@@ -58,19 +58,19 @@ public class DrawingServices {
     // Mètode per carregar tots els dibuixos
     public List<Drawing> loadAll(User user) throws ErrorWithListException {
 
-            // Carrega només els teus dibuixos i els públics s'altres usuaris
-            List<Drawing> allDrawings = drawingREPO.loadAllLists(user);
+        // Carrega només els teus dibuixos i els públics s'altres usuaris
+        List<Drawing> allDrawings = drawingREPO.loadAllLists(user);
 
-            // Assignam a cada dibuix el seu usuari mitjançant l'id del mateix
-            for (Drawing drawing : allDrawings) {
-                drawing.setUser(drawingREPO.getUserById(drawing.getIdUser()));
-            }
+        // Assignam a cada dibuix el seu usuari mitjançant l'id del mateix
+        for (Drawing drawing : allDrawings) {
+            drawing.setUser(drawingREPO.getUserById(drawing.getIdUser()));
+        }
 
-            for (Drawing drawing : allDrawings) {
-                if (drawing.isTrash() || user.getId() != drawing.getIdUser() && !drawing.isTrash()) {
-                    throw new ErrorWithListException();
-                }
+        for (Drawing drawing : allDrawings) {
+            if (drawing.isTrash() || user.getId() != drawing.getIdUser() && !drawing.isTrash()) {
+                throw new ErrorWithListException();
             }
+        }
 
         return allDrawings;
     }

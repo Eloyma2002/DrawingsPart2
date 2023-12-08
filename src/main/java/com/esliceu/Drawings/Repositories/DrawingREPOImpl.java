@@ -3,8 +3,6 @@ package com.esliceu.Drawings.Repositories;
 import com.esliceu.Drawings.Entities.Drawing;
 import com.esliceu.Drawings.Entities.User;
 import com.esliceu.Drawings.Entities.Version;
-import com.esliceu.Drawings.Exceptions.ErrorWithListException;
-import com.esliceu.Drawings.Exceptions.ErrorWithTrashListException;
 import com.esliceu.Drawings.Exceptions.YouCantDeleteThisDrawingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -120,12 +118,14 @@ public class DrawingREPOImpl implements DrawingREPO {
     }
 
     @Override
-    public void addVersion(Version version) {
+    public boolean addVersion(Version version) {
         // Modificar les figures, aficam una nova versió
-        jdbcTemplate.update("INSERT INTO `version` (`figures`, `idDrawing`, `dateModify`, `numFigures`) " +
+        int insert = jdbcTemplate.update("INSERT INTO `version` (`figures`, `idDrawing`, `dateModify`, `numFigures`) " +
                                 "VALUES (?, ?, ?, ?);",
                                 version.getFigures(), version.getIdDrawing(), version.getDateModify(),
                                 version.getNumFigures());
+
+        return insert > 0;
     }
 
     @Override
@@ -141,5 +141,13 @@ public class DrawingREPOImpl implements DrawingREPO {
 
         // Si drawingRecover es major que 0, significa que hi ha un dibuix recuperat de la paperera
         return drawingRecover > 0;
+    }
+
+    @Override
+    public boolean changeVisibility(Drawing drawing, boolean visibulity) {
+        // Recupera el dibuix de la paperera
+        int changeVisibility = jdbcTemplate.update("UPDATE drawing SET view = ? WHERE id = ?;", visibulity, drawing.getId());
+
+        return changeVisibility > 0;
     }
 }

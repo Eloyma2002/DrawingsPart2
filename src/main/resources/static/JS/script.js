@@ -21,12 +21,11 @@ const storedChecked = localStorage.getItem("checked");
 const storedSize = localStorage.getItem("size");
 const storedFigureSelected = localStorage.getItem("figureSelected");
 
+
 // Configuración del canvas
 canvas.width = 400;
 canvas.height = 400;
 
-// Imports para funciones en archivos js externos
-import * as Draw from './draw.js';
 
 // Inicializa las variables con los valores almacenados o valores predeterminados
 let color = storedColor || colorInput.value;
@@ -42,7 +41,7 @@ let content = [];
 let lineContent = [];
 let isDrawingEnabled = false;
 let isModifyMode = false;
-let idModifyFigure = -1;
+let idModifyFigure = -1; 
 
 // Actualiza los valores iniciales
 colorInput.value = color;
@@ -50,17 +49,19 @@ checkbox.checked = checked;
 rangeInput.value = size;
 select.value = figureSelected;
 
+
 // Establece el color del botón de dibujo según el estado
 buttonDraw.style.backgroundColor = isDrawingEnabled ? 'green' : 'red';
 
-// Event listeners para los elementos
+// Event listeners para los elementos del DOM
 select.addEventListener("change", function () {
 
     if (isModifyMode) {
         updateElementProperties();
     }
-    figureSelected = select.value;
-    localStorage.setItem("figureSelected", figureSelected);
+        figureSelected = select.value;
+        localStorage.setItem("figureSelected", figureSelected);
+
 });
 
 buttonSend.addEventListener("click", function () {
@@ -78,53 +79,36 @@ buttonSend.addEventListener("click", function () {
 colorInput.addEventListener("input", function () {
     if (isModifyMode) {
         updateElementProperties();
-    }
-    color = colorInput.value;
-    localStorage.setItem("color", color);
-
+    } 
+        color = colorInput.value;
+        localStorage.setItem("color", color);
+    
 });
 
 rangeInput.addEventListener("input", function () {
     if (isModifyMode) {
         updateElementProperties();
     }
-    size = rangeInput.value;
-    localStorage.setItem("size", size);
-
+        size = rangeInput.value;
+        localStorage.setItem("size", size);
 });
 
 checkbox.addEventListener("change", function () {
     if (isModifyMode) {
         updateElementProperties();
     }
-    checked = checkbox.checked;
-    localStorage.setItem("checked", checked);
-
-
+        checked = checkbox.checked;
+        localStorage.setItem("checked", checked);
+    
 });
 
 // Dibuja la figura seleccionada al hacer clic en el canvas
 canvas.addEventListener('click', function (event) {
     x = event.offsetX;
     y = event.offsetY;
-
-    if (isModifyMode && idModifyFigure != -1) {
-        let figure = Draw.obtainFigureById(idModifyFigure, content);
-        figure.x = x;
-        figure.y = y;
-        Draw.redrawCanvas(content, context, canvas);
-        return;
-    }
-
     if (isDrawingEnabled) return;
     drawFigureSelected(x, y, figureSelected, size, checked, color, false);
 });
-
-document.addEventListener("click", function () {
-    if (content.length === 0) {
-        isModifyMode = false;
-    }
-})
 
 // Limpia el canvas y la lista de figuras
 buttonClean.addEventListener('click', function () {
@@ -137,17 +121,34 @@ buttonClean.addEventListener('click', function () {
 // Activa/desactiva el modo de dibujo
 buttonDraw.addEventListener('click', function () {
     isDrawingEnabled = !isDrawingEnabled;
-    if (isModifyMode == true) return;
     buttonDraw.style.backgroundColor = isDrawingEnabled ? 'green' : 'red';
 });
 
+function updateElementProperties() {
+    const elementToModify = content.find(element => element.id === cont - 1);
 
+    if (elementToModify) {
+        elementToModify.type = select.value;
+        elementToModify.color = colorInput.value;
+        elementToModify.size = rangeInput.value;
+        elementToModify.fill = checkbox.checked;
+
+        // Vuelve a dibujar el canvas con el elemento modificado
+        redrawCanvas();
+    }
+}
+
+// Si no hay figuras desactiva el modo de modificar
+document.addEventListener("click", function () {
+    if (content.length === 0) {
+        isModifyMode = false;
+        idModifyFigure = -1;
+    }
+})
 
 // Event listeners para el dibujo con el mouse
 canvas.addEventListener("mousedown", (event) => {
     if (!isDrawingEnabled) return;
-    if (isModifyMode) return;
-
     isMouseDrawing = true;
     lineContent = [];
     const x = event.clientX - canvas.getBoundingClientRect().left;
@@ -175,6 +176,7 @@ canvas.addEventListener("mousedown", (event) => {
         if (isMouseDrawing) {
             canvas.removeEventListener("mousemove", (event) => drawMouse(event));
             isMouseDrawing = false;
+
         }
     });
 });
@@ -195,8 +197,12 @@ canvas.addEventListener("mouseup", () => {
 });
 
 // Genera un nombre de imagen aleatorio
-nameImage.value = Draw.randomName();
+nameImage.value = randomName();
 
+// Función para generar un nombre aleatorio
+function randomName() {
+    return "image" + Math.floor(Math.random() * 9999 + 1);
+}
 
 // Función para dibujar con el mouse
 function drawMouse(event) {
@@ -209,56 +215,117 @@ function drawMouse(event) {
     context.stroke();
 }
 
+// Función para agregar una figura a la lista
+function addFigureToList(figureSelected, x, y, size, color, checked) {
+    content.push({
+        "id": cont,
+        "type": figureSelected,
+        "x": x,
+        "y": y,
+        "color": color,
+        "fill": checked,
+        "size": size,
+    });
+}
 
 // Función para escribir en la lista
 function write(text) {
-    if (text == "Line") {
-        list.innerHTML += "<li id='li_" + cont + "'> <button onclick='removeElement(" + cont + ")'>Remove</button> " + text;
-    } else {
-        list.innerHTML += "<li id='li_" + cont + "'> <button onclick='removeElement(" + cont + ")'>Remove</button> " +
-            "<button id='" + cont + "' onclick='modifyElement(" + cont + ")' styles='backgound-color = 'red''>Modify</button>" + text + "</li>";
-        
-        const buttonModify = document.getElementById(cont);
-        buttonModify.style.backgroundColor = 'red';
-    }
+    list.innerHTML += "<li id='li_" + cont + "'> <button onclick='removeElement(" + cont + ")'>Remove</button> " +
+                      "<button id='"+cont+"' onclick='modifyElement(" + cont + ")'>Modify</button>" + text + "</li>";
 }
 
-// Agrega la función modifyElement
-function modifyElement(id) {
-    if (isDrawingEnabled == true) {
-        return;
-    }
-    
-    isModifyMode = !isModifyMode; // Activa el modo de modificación
 
-    if (id != idModifyFigure && idModifyFigure != -1) {
-        const lastButton = document.getElementById(idModifyFigure);
-        lastButton.style.backgroundColor = 'red'
-        isModifyMode = false;
-        return;
-    }
+function obtainFigureById(id) {
+    // Encuentra el elemento en el contenido con el ID correspondiente
+    return content.find(element => element.id === id);
+}
+
+
+function modifyElement(id) {
+    // Activa/desactiva el modo de modificación
+    isModifyMode = !isModifyMode; 
 
     const buttonModify = document.getElementById(id);
-    idModifyFigure = id;
 
-    if (isModifyMode == false) {
+    if (isModifyMode === false) {
         buttonModify.style.backgroundColor = 'red';
-        idModifyFigure = -1;
         return;
     }
+
     buttonModify.style.backgroundColor = 'green';
 
-    const elementToModify = Draw.obtainFigureById(id, content);
+    // Obtiene la figura actual
+    const elementToModify = obtainFigureById(id);
 
     // Llena los campos del formulario con los valores actuales del elemento
     select.value = elementToModify.type;
     colorInput.value = elementToModify.color;
     checkbox.checked = elementToModify.fill;
     rangeInput.value = elementToModify.size;
+
+    // Agrega un nuevo evento de clic para el canvas durante el modo de modificación
+    canvas.addEventListener('click', function (event) {
+        if (!isModifyMode) return; // Sale si no está en modo de modificación
+
+        x = event.offsetX;
+        y = event.offsetY;
+
+        // Actualiza las coordenadas del elemento
+        modifyFigure(id, { x, y });
+
+        // Desactiva el modo de modificación después de modificar una vez
+        // Remueve este evento de clic para evitar múltiples modificaciones en un solo clic
+        canvas.removeEventListener('click', arguments.callee);
+    });
 }
 
+function modifyFigure(id, updatedFigure) {
+    const index = content.findIndex(element => element.id === id);
+
+    if (index !== -1) {
+        // Actualiza la figura en el array y redibuja el canvas entero
+        content[index] = { ...content[index], ...updatedFigure };
+        redrawCanvas();
+    }
+}
+
+// Agrega la función para redibujar el canvas con el elemento modificado
+function redrawCanvas() {
+    // Limpia el canvas
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Redibuja todas las figuras en el contenido
+    content.forEach(figure => {
+        if (figure.type !== 'line') {
+            drawFigureSelected(figure.x, figure.y, figure.type, figure.size, figure.fill, figure.color, true);
+        } else {
+            drawLine(figure);
+        }
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Función para dibujar una línea
-export function drawLine(lineObject) {
+function drawLine(lineObject) {
     context.strokeStyle = lineObject.color;
     context.lineWidth = lineObject.size;
     context.beginPath();
@@ -309,14 +376,14 @@ function removeElement(id) {
 }
 
 // Función para dibujar la figura seleccionada
-export function drawFigureSelected(x, y, figureSelected, size, checked, color, removeList) {
-    if (isDrawingEnabled && !removeList) {
+function drawFigureSelected(x, y, figureSelected, size, checked, color, removeList) {
+    if (isDrawingEnabled && !removeList || isModifyMode) {
         return;
     }
+
     context.strokeStyle = color;
     context.fillStyle = checked ? color : "transparent";
     context.lineWidth = 1;
-
     switch (figureSelected) {
         case 'circle':
             context.beginPath();
@@ -324,7 +391,7 @@ export function drawFigureSelected(x, y, figureSelected, size, checked, color, r
             context.fill();
             context.stroke();
             if (!removeList) {
-                Draw.addFigureToList(figureSelected, x, y, size, color, checked, content, cont);
+                addFigureToList(figureSelected, x, y, size, color, checked);
                 write("Circle");
                 cont++;
             }
@@ -334,7 +401,7 @@ export function drawFigureSelected(x, y, figureSelected, size, checked, color, r
             context.fillRect(x - size / 2, y - size / 2, size * 2, size * 2);
             context.strokeRect(x - size / 2, y - size / 2, size * 2, size * 2);
             if (!removeList) {
-                Draw.addFigureToList(figureSelected, x, y, size, color, checked, content, cont);
+                addFigureToList(figureSelected, x, y, size, color, checked);
                 write("Square");
                 cont++;
             }
@@ -348,7 +415,7 @@ export function drawFigureSelected(x, y, figureSelected, size, checked, color, r
             context.fill();
             context.stroke();
             if (!removeList) {
-                Draw.addFigureToList(figureSelected, x, y, size, color, checked, content, cont);
+                addFigureToList(figureSelected, x, y, size, color, checked);
                 write("Triangle");
                 cont++;
             }
@@ -364,7 +431,7 @@ export function drawFigureSelected(x, y, figureSelected, size, checked, color, r
             context.fill();
             context.stroke();
             if (!removeList) {
-                Draw.addFigureToList(figureSelected, x, y, size, color, checked, content, cont);
+                addFigureToList(figureSelected, x, y, size, color, checked);
                 write("Star");
                 cont++;
             }

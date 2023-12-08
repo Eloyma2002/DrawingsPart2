@@ -18,11 +18,9 @@ public class VersionREPOImpl implements VersionREPO {
 
     @Override
     public Version getLastVersion(int idDrawing) {
-
         return jdbcTemplate.queryForObject(
                 "SELECT * FROM version WHERE idDrawing = ? ORDER BY id DESC LIMIT 1",
-                new BeanPropertyRowMapper<>(Version.class), idDrawing
-        );
+                new BeanPropertyRowMapper<>(Version.class), idDrawing);
     }
 
     @Override

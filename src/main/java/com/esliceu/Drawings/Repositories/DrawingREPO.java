@@ -24,9 +24,11 @@ public interface DrawingREPO {
 
     User getUserById(int idUser);
 
-    void addVersion(Version version);
+    boolean addVersion(Version version);
 
     void changeDrawingName(Drawing drawing, String name);
 
     boolean recoverDrawingFromTrash(int drawingId);
+
+    boolean changeVisibility(Drawing drawing, boolean visibulity);
 }
